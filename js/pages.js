@@ -1088,3 +1088,134 @@ function closeModalAndGo(hash) {
   if (overlay) overlay.remove();
   location.hash = hash;
 }
+
+/* ==================== 通知模板 ==================== */
+Pages.template = function() {
+  var container = document.getElementById('page-template');
+  var templates = App.dataCache.notices || [];
+  var html = '<div class="template-page">';
+
+  // 头部统计
+  html += '<div class="stats-row">';
+  html += '<div class="stat-item"><span class="stat-num">' + templates.length + '</span><span class="stat-label">模板总数</span></div>';
+  html += '</div>';
+
+  // 操作栏
+  html += '<div class="action-bar">';
+  html += '<button class="btn btn-primary" onclick="Pages._templateForm()">+ 新建模板</button>';
+  html += '</div>';
+
+  // 模板列表
+  if (templates.length === 0) {
+    html += '<div class="empty-state">暂无通知模板，点击上方按钮创建</div>';
+  } else {
+    html += '<div class="template-list">';
+    templates.forEach(function(t, i) {
+      var typeLabel = t.type === 'penalty' ? '处罚通知' : t.type === 'inspect' ? '检查通知' : t.type === 'complaint' ? '申诉通知' : '通用通知';
+      var typeColor = t.type === 'penalty' ? '#ef4444' : t.type === 'inspect' ? '#3b82f6' : t.type === 'complaint' ? '#f59e0b' : '#6b7280';
+      html += '<div class="template-card">';
+      html += '<div class="template-head">';
+      html += '<span class="template-name">' + (t.name || '未命名') + '</span>';
+      html += '<span class="template-type" style="background:' + typeColor + '">' + typeLabel + '</span>';
+      html += '</div>';
+      html += '<div class="template-preview">' + (t.content || '').replace(/\{(\w+)\}/g, '<em>{$1}</em>') + '</div>';
+      html += '<div class="template-actions">';
+      html += '<button class="btn btn-sm" onclick="Pages._templateForm(' + i + ')">编辑</button>';
+      html += '<button class="btn btn-sm btn-danger" onclick="Pages._templateDelete(' + i + ')">删除</button>';
+      html += '</div>';
+      html += '</div>';
+    });
+    html += '</div>';
+  }
+
+  html += '</div>';
+  container.innerHTML = html;
+};
+
+Pages._templateForm = function(index) {
+  var templates = App.dataCache.notices || [];
+  var t = (index !== undefined && index >= 0) ? templates[index] : null;
+  var isEdit = !!t;
+  var title = isEdit ? '编辑模板' : '新建模板';
+
+  var html = '<div class="modal-overlay" onclick="this.remove()"><div class="modal-sheet" onclick="event.stopPropagation()">';
+  html += '<div class="modal-header"><h3>' + title + '</h3><span class="modal-close" onclick="this.closest(\'.modal-overlay\').remove()">&times;</span></div>';
+  html += '<div class="modal-body">';
+
+  // 模板名称
+  html += '<div class="form-group"><label>模板名称</label>';
+  html += '<input type="text" id="tpl-name" class="form-input" value="' + (t ? t.name || '' : '') + '" placeholder="如：处罚通知-门店"></div>';
+
+  // 类型选择
+  html += '<div class="form-group"><label>适用场景</label>';
+  html += '<select id="tpl-type" class="form-input">';
+  var types = [
+    { v: 'penalty', l: '处罚通知' },
+    { v: 'inspect', l: '检查通知' },
+    { v: 'complaint', l: '申诉通知' },
+    { v: 'general', l: '通用通知' }
+  ];
+  types.forEach(function(ty) {
+    var sel = (t && t.type === ty.v) ? ' selected' : '';
+    html += '<option value="' + ty.v + '"' + sel + '>' + ty.l + '</option>';
+  });
+  html += '</select></div>';
+
+  // 模板内容
+  html += '<div class="form-group"><label>模板内容 <span class="hint">可用变量：{门店名称} {日期} {检查人} {扣分项} {处罚金额} {申诉内容}</span></label>';
+  html += '<textarea id="tpl-content" class="form-input" rows="8" placeholder="如：{门店名称} 于 {日期} 被检查发现 {扣分项}，处罚 {处罚金额} 元...">' + (t ? t.content || '' : '') + '</textarea></div>';
+
+  // 预览
+  html += '<div class="form-group"><label>变量说明</label>';
+  html += '<div class="var-hints">';
+  html += '<code>{门店名称}</code><code>{日期}</code><code>{检查人}</code><code>{扣分项}</code>';
+  html += '<code>{处罚金额}</code><code>{申诉内容}</code><code>{检查得分}</code><code>{整改期限}</code>';
+  html += '</div></div>';
+
+  html += '</div>';
+  html += '<div class="modal-footer">';
+  html += '<button class="btn" onclick="this.closest(\'.modal-overlay\').remove()">取消</button>';
+  html += '<button class="btn btn-primary" onclick="Pages._templateSave(' + (isEdit ? index : -1) + ')">保存</button>';
+  html += '</div>';
+  html += '</div></div>';
+
+  var div = document.createElement('div');
+  div.innerHTML = html;
+  document.body.appendChild(div.firstElementChild);
+};
+
+Pages._templateSave = function(index) {
+  var name = (document.getElementById('tpl-name') || {}).value || '';
+  var type = (document.getElementById('tpl-type') || {}).value || 'general';
+  var content = (document.getElementById('tpl-content') || {}).value || '';
+
+  if (!name.trim()) return App.toast('请输入模板名称');
+  if (!content.trim()) return App.toast('请输入模板内容');
+
+  var templates = App.dataCache.notices || [];
+  var tpl = { name: name.trim(), type: type, content: content.trim() };
+
+  if (index >= 0) {
+    templates[index] = tpl;
+  } else {
+    templates.push(tpl);
+  }
+
+  App.dataCache.notices = templates;
+  localStorage.setItem('nanchengxiang_notices', JSON.stringify(templates));
+  App.toast(index >= 0 ? '模板已更新' : '模板已创建');
+
+  var overlay = document.querySelector('.modal-overlay');
+  if (overlay) overlay.remove();
+  Pages.template();
+};
+
+Pages._templateDelete = function(index) {
+  if (!confirm('确定删除该模板？')) return;
+  var templates = App.dataCache.notices || [];
+  templates.splice(index, 1);
+  App.dataCache.notices = templates;
+  localStorage.setItem('nanchengxiang_notices', JSON.stringify(templates));
+  App.toast('模板已删除');
+  Pages.template();
+};

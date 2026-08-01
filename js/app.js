@@ -164,6 +164,7 @@ const App = {
     this.dataCache.complaints = JSON.parse(localStorage.getItem('nanchengxiang_complaints') || '[]');
     this.dataCache.online_records = JSON.parse(localStorage.getItem('nanchengxiang_online_records') || '[]');
     this.dataCache.offline_records = JSON.parse(localStorage.getItem('nanchengxiang_offline_records') || '[]');
+    this.dataCache.notices = JSON.parse(localStorage.getItem('nanchengxiang_notices') || '[]');
     this.dataReady = true;
   },
 
@@ -296,7 +297,7 @@ const App = {
       }
     }
 
-    var tabPages = ['home', 'inspection', 'penalty', 'complaint', 'dashboard'];
+    var tabPages = ['home', 'inspection', 'penalty', 'complaint', 'dashboard', 'template'];
     document.querySelectorAll('.tab-item').forEach(function(t) {
       t.classList.toggle('active', t.dataset.page === hash);
     });
@@ -306,7 +307,7 @@ const App = {
 
     var titleMap = {
       login: '南城香协作终端', home: '首页', inspection: '门店检查', 'offline-inspect': '线下门店检查',
-      penalty: '处罚登记', complaint: '差评申诉', dashboard: '领导看板', admin: '数据管理'
+      penalty: '处罚登记', complaint: '差评申诉', dashboard: '领导看板', template: '通知模板', admin: '数据管理'
     };
     document.getElementById('header-title').textContent = titleMap[hash] || '';
     document.getElementById('header-back').style.display = (hash === 'offline-inspect' || hash === 'login') ? 'none' : 'none';
