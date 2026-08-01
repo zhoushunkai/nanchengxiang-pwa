@@ -358,67 +358,120 @@ body {
   color: rgba(255,255,255,0.7);
   margin-bottom: 32px;
 }
-.login-card {
+.phone-login-card {
   width: 100%;
   background: #fff;
   border-radius: 12px;
   padding: 24px 20px;
 }
-.login-card .role-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-bottom: 16px;
+.phone-login-card .card-title {
+  text-align: center;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 20px;
 }
-.role-option {
-  padding: 14px 10px;
+.phone-input-group {
+  display: flex;
+  align-items: center;
   border: 2px solid var(--border);
   border-radius: 8px;
-  text-align: center;
-  cursor: pointer;
-  transition: all 0.2s;
-  font-size: 13px;
+  overflow: hidden;
+  margin-bottom: 12px;
 }
-.role-option.selected {
-  border-color: var(--primary);
-  background: var(--primary-light);
-  color: var(--primary);
-  font-weight: 600;
+.phone-prefix {
+  padding: 12px 16px;
+  background: #f5f5f5;
+  color: #666;
+  font-size: 15px;
+  font-weight: 500;
+  border-right: 1px solid var(--border);
 }
-.role-option .role-icon {
-  font-size: 28px;
-  display: block;
-  margin-bottom: 4px;
+.phone-input {
+  flex: 1;
+  padding: 12px 14px;
+  border: none;
+  font-size: 16px;
+  outline: none;
+  background: #fff;
 }
-
-/* === WeChat Auth Button === */
-.wechat-btn {
+.phone-input:focus { border-color: var(--primary); }
+.sms-btn {
   width: 100%;
   padding: 12px;
-  background: #07C160;
+  background: var(--primary);
   color: #fff;
   border: none;
   border-radius: 8px;
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
-  margin-top: 12px;
+  margin-bottom: 12px;
+  transition: opacity 0.2s;
 }
-.wechat-btn:active { background: #06AD56; }
+.sms-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.sms-btn:active:not(:disabled) { background: var(--primary-dark); }
+.code-input-group {
+  display: flex;
+  gap: 10px;
+}
+.code-input {
+  flex: 1;
+  padding: 12px 14px;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  font-size: 16px;
+  outline: none;
+  text-align: center;
+  letter-spacing: 4px;
+}
+.code-input:focus { border-color: var(--primary); }
+.login-btn {
+  padding: 12px 24px;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: opacity 0.2s;
+}
+.login-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.login-btn:active:not(:disabled) { background: var(--primary-dark); }
+.login-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 16px 0;
+  width: 100%;
+}
+.login-divider::before,
+.login-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(255,255,255,0.3);
+}
+.login-divider span {
+  color: rgba(255,255,255,0.6);
+  font-size: 13px;
+}
 
 .skip-btn {
   display: block;
   width: 100%;
   padding: 12px;
   background: transparent;
-  color: #999;
-  border: 1px dashed #ccc;
+  color: rgba(255,255,255,0.7);
+  border: 1px dashed rgba(255,255,255,0.4);
   border-radius: 8px;
   font-size: 14px;
   cursor: pointer;
-  margin-top: 8px;
+  margin-top: 0;
 }
-.skip-btn:active { background: #f5f5f5; color: #666; }
+.skip-btn:active { background: rgba(255,255,255,0.15); color: #fff; }
 
 /* === Score Card === */
 .score-circle {
