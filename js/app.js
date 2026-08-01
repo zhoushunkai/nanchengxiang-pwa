@@ -257,6 +257,32 @@ const App = {
       localStorage.setItem('nanchengxiang_users', JSON.stringify(data));
     }
   },
+
+  /* 单用户增删改 */
+  async addUser(user) {
+    var users = this.getUsers();
+    user.id = user.id || 'u' + Date.now();
+    users.push(user);
+    await this.saveUsers(users);
+    this.toast(user.name + ' 已添加');
+  },
+  async updateUser(id, updates) {
+    var users = this.getUsers();
+    var idx = users.findIndex(function(u) { return u.id === id; });
+    if (idx === -1) return;
+    for (var k in updates) { if (updates.hasOwnProperty(k)) users[idx][k] = updates[k]; }
+    await this.saveUsers(users);
+    this.toast((updates.name || '用户') + ' 已更新');
+  },
+  async deleteUser(id) {
+    var users = this.getUsers();
+    var user = users.find(function(u) { return u.id === id; });
+    if (!user) return;
+    var name = user.name;
+    var filtered = users.filter(function(u) { return u.id !== id; });
+    await this.saveUsers(filtered);
+    this.toast(name + ' 已删除');
+  },
   async saveStores(data) {
     this.dataCache.stores = data;
     if (this.supabase) {
@@ -365,8 +391,8 @@ const App = {
   downloadTemplate(type) {
     var headers, sample;
     if (type === 'users') {
-      headers = 'id,name,role,area,storeId,store';
-      sample = 'u099,测试员工,店长,经营一区,FZ001,方庄店';
+      headers = 'id,name,role,area,storeId,store,phone';
+      sample = 'u099,测试员工,店长,经营一区,FZ001,方庄店,13800000099';
     } else {
       headers = 'id,name,district,adminArea,bizArea,region,manager,managerTitle,mode';
       sample = 'S099,测试门店,朝阳区,朝阳区,经营一区,经营一区,张三,门店第一负责人,2.0';
@@ -447,6 +473,9 @@ const App = {
     } else if (type === 'complaints') {
       data = this.getComplaints();
       headers = ['id', 'storeId', 'store', 'date', 'meal', 'content', 'opportunity', 'platform', 'responsible', 'responsibleTitle', 'dutyManager', 'status', 'appealContent', 'appealResult'];
+    } else if (type === 'users') {
+      data = this.getUsers();
+      headers = ['id', 'name', 'role', 'area', 'storeId', 'store', 'phone'];
     } else {
       var stores = this.getStores();
       var penalties = this.getPenalties();

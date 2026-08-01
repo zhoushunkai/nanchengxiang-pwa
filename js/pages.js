@@ -236,28 +236,58 @@ Pages.home = function() {
   el.innerHTML = html;
 };
 
-/* ---- 数据管理页（总部专享：导入导出） ---- */
+/* ---- 数据管理页（总部专享：人员管理 + 导入导出） ---- */
 Pages.admin = function() {
   var user = App.currentUser;
   if (user.role !== '总部' && user.role !== 'admin') {
     var el = document.getElementById('page-admin');
-    el.innerHTML = '<div class="empty-state"><div class="empty-icon">\u{1F6AB}</div><div>仅总部管理员可访问此页面</div></div>';
+    el.innerHTML = '<div class="empty-state"><div class="empty-icon">&#128683;</div><div>仅总部管理员可访问此页面</div></div>';
     return;
   }
 
   var html = '';
-  html += '<div class="section-title">\u{1F4E5} 数据导入</div>';
 
-  /* 导入人员 */
+  /* ===== 人员管理 ===== */
+  var users = App.getUsers();
+  html += '<div class="section-title">&#128101; 人员管理（' + users.length + '人）</div>';
+  html += '<div class="action-bar">';
+  html += '<button class="btn btn-primary" onclick="Pages._userForm()">+ 新增人员</button>';
+  html += '</div>';
+
+  if (users.length === 0) {
+    html += '<div class="empty-state">暂无人员数据</div>';
+  } else {
+    html += '<div class="user-list">';
+    var roleMap = { '总部': '#c41a1a', '线上稽核': '#2563eb', '线下稽核': '#7c3aed', '区域教练': '#d97706', '店长': '#059669' };
+    users.forEach(function(u) {
+      html += '<div class="user-row">';
+      html += '<div class="user-info">';
+      html += '<div class="user-name">' + u.name + '</div>';
+      html += '<div class="user-meta">';
+      html += '<span class="user-role-tag" style="background:' + (roleMap[u.role] || '#6b7280') + '">' + u.role + '</span>';
+      if (u.store) html += '<span class="user-store">' + u.store + '</span>';
+      if (u.area) html += '<span class="user-area">' + u.area + '</span>';
+      html += '<span class="user-phone">' + (u.phone || '') + '</span>';
+      html += '</div></div>';
+      html += '<div class="user-actions">';
+      html += '<button class="btn btn-xs" onclick="Pages._userForm(\'' + u.id + '\')">编辑</button>';
+      html += '<button class="btn btn-xs btn-danger" onclick="Pages._userDelete(\'' + u.id + '\',\'' + u.name + '\')">删除</button>';
+      html += '</div></div>';
+    });
+    html += '</div>';
+  }
+
+  /* ===== 数据导入 ===== */
+  html += '<div class="section-title" style="margin-top:24px">&#128229; 数据导入</div>';
+
   html += '<div class="card">';
   html += '<div class="card-title">导入人员</div>';
-  html += '<div class="card-desc">CSV 格式：id, 姓名, 角色(总部/线上稽核/线下稽核/区域教练/店长), 区域/区, 门店ID, 门店名</div>';
+  html += '<div class="card-desc">CSV 格式：id, 姓名, 角色(总部/线上稽核/线下稽核/区域教练/店长), 区域/区, 门店ID, 门店名, 手机号</div>';
   html += '<div style="margin:8px 0"><button class="btn btn-xs btn-outline" onclick="App.downloadTemplate(\'users\')">下载人员模板</button></div>';
   html += '<input type="file" accept=".csv" onchange="App.importCSV(this, \'users\')" style="display:none" id="file-users">';
   html += '<button class="btn btn-primary" style="width:100%" onclick="document.getElementById(\'file-users\').click()">选择人员 CSV 并导入</button>';
   html += '</div>';
 
-  /* 导入门店 */
   html += '<div class="card">';
   html += '<div class="card-title">导入门店</div>';
   html += '<div class="card-desc">CSV 格式：门店ID, 门店名, 行政区, 行政区域, 经营区, 区域, 店长, 店长称谓, 经营模式</div>';
@@ -266,27 +296,115 @@ Pages.admin = function() {
   html += '<button class="btn btn-primary" style="width:100%" onclick="document.getElementById(\'file-stores\').click()">选择门店 CSV 并导入</button>';
   html += '</div>';
 
-  html += '<div class="section-title" style="margin-top:20px">\u{1F4E4} 数据导出</div>';
+  /* ===== 数据导出 ===== */
+  html += '<div class="section-title" style="margin-top:20px">&#128228; 数据导出</div>';
 
-  /* 导出处罚 */
+  html += '<div class="card">';
+  html += '<div class="card-title">导出人员数据</div>';
+  html += '<button class="btn btn-outline" style="width:100%" onclick="App.exportCSV(\'users\')">下载人员 CSV</button>';
+  html += '</div>';
+
   html += '<div class="card">';
   html += '<div class="card-title">导出处罚数据</div>';
   html += '<button class="btn btn-outline" style="width:100%" onclick="App.exportCSV(\'penalties\')">下载处罚 CSV</button>';
   html += '</div>';
 
-  /* 导出差评 */
   html += '<div class="card">';
   html += '<div class="card-title">导出差评数据</div>';
   html += '<button class="btn btn-outline" style="width:100%" onclick="App.exportCSV(\'complaints\')">下载差评 CSV</button>';
   html += '</div>';
 
-  /* 导出看板 */
   html += '<div class="card">';
   html += '<div class="card-title">导出看板汇总</div>';
   html += '<button class="btn btn-outline" style="width:100%" onclick="App.exportCSV(\'dashboard\')">下载看板 CSV</button>';
   html += '</div>';
 
   document.getElementById('page-admin').innerHTML = html;
+};
+
+/* ---- 人员表单弹窗 ---- */
+Pages._userForm = function(id) {
+  var users = App.getUsers();
+  var u = id ? users.find(function(x) { return x.id === id; }) : null;
+  var isEdit = !!u;
+  var title = isEdit ? '编辑人员' : '新增人员';
+
+  var html = '<div class="modal-overlay" onclick="this.remove()"><div class="modal-sheet" onclick="event.stopPropagation()">';
+  html += '<div class="modal-header"><h3>' + title + '</h3><span class="modal-close" onclick="this.closest(\'.modal-overlay\').remove()">&times;</span></div>';
+  html += '<div class="modal-body">';
+
+  html += '<div class="form-group"><label>姓名</label>';
+  html += '<input type="text" id="uf-name" class="form-input" value="' + (u ? u.name || '' : '') + '" placeholder="如：张三"></div>';
+
+  html += '<div class="form-group"><label>角色</label>';
+  html += '<select id="uf-role" class="form-input">';
+  ['总部', '线上稽核', '线下稽核', '区域教练', '店长'].forEach(function(r) {
+    var sel = (u && u.role === r) ? ' selected' : '';
+    html += '<option value="' + r + '"' + sel + '>' + r + '</option>';
+  });
+  html += '</select></div>';
+
+  html += '<div class="form-group"><label>手机号</label>';
+  html += '<input type="tel" id="uf-phone" class="form-input" value="' + (u ? u.phone || '' : '') + '" placeholder="用于登录"></div>';
+
+  html += '<div class="form-group"><label>所属区域</label>';
+  html += '<input type="text" id="uf-area" class="form-input" value="' + (u ? u.area || '' : '') + '" placeholder="区域教练填写，如：经营一区"></div>';
+
+  html += '<div class="form-group"><label>绑定门店</label>';
+  html += '<select id="uf-storeId" class="form-input">';
+  html += '<option value="">-- 不绑定 --</option>';
+  var stores = App.getStores();
+  stores.forEach(function(s) {
+    var sel2 = (u && u.storeId === s.id) ? ' selected' : '';
+    html += '<option value="' + s.id + '"' + sel2 + '>' + s.name + '</option>';
+  });
+  html += '</select></div>';
+
+  html += '</div>';
+  html += '<div class="modal-footer">';
+  html += '<button class="btn" onclick="this.closest(\'.modal-overlay\').remove()">取消</button>';
+  html += '<button class="btn btn-primary" onclick="Pages._userSave(\'' + (isEdit ? id : '') + '\')">保存</button>';
+  html += '</div>';
+  html += '</div></div>';
+
+  var div = document.createElement('div');
+  div.innerHTML = html;
+  document.body.appendChild(div.firstElementChild);
+};
+
+Pages._userSave = async function(id) {
+  var name = (document.getElementById('uf-name') || {}).value || '';
+  var role = (document.getElementById('uf-role') || {}).value || '店长';
+  var phone = (document.getElementById('uf-phone') || {}).value || '';
+  var area = (document.getElementById('uf-area') || {}).value || '';
+  var storeId = (document.getElementById('uf-storeId') || {}).value || '';
+
+  if (!name.trim()) return App.toast('请输入姓名');
+
+  var storeName = '';
+  if (storeId) {
+    var stores = App.getStores();
+    var s = stores.find(function(x) { return x.id === storeId; });
+    if (s) storeName = s.name;
+  }
+
+  var data = { name: name.trim(), role: role, phone: phone.trim(), area: area.trim(), storeId: storeId, store: storeName };
+
+  var overlay = document.querySelector('.modal-overlay');
+  if (overlay) overlay.remove();
+
+  if (id) {
+    await App.updateUser(id, data);
+  } else {
+    await App.addUser(data);
+  }
+  Pages.admin();
+};
+
+Pages._userDelete = async function(id, name) {
+  if (!confirm('确定删除「' + name + '」？此操作不可恢复。')) return;
+  await App.deleteUser(id);
+  Pages.admin();
 };
 
 /* ---- 门店检查页（线上组） ---- */

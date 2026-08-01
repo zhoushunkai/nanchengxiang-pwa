@@ -943,3 +943,19 @@ body {
   background: #f3f4f6; color: #6366f1; font-size: 12px;
   padding: 3px 8px; border-radius: 4px; font-family: monospace;
 }
+
+/* ========== 人员管理 ========== */
+.user-list { display: flex; flex-direction: column; gap: 8px; }
+.user-row {
+  background: #fff; border-radius: 10px; padding: 12px 14px;
+  display: flex; align-items: center; justify-content: space-between;
+  box-shadow: 0 1px 3px rgba(0,0,0,.05);
+}
+.user-info { flex: 1; min-width: 0; }
+.user-name { font-weight: 600; font-size: 15px; margin-bottom: 4px; }
+.user-meta { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 12px; }
+.user-role-tag { color: #fff; padding: 1px 8px; border-radius: 8px; font-size: 11px; white-space: nowrap; }
+.user-store, .user-area { color: #666; }
+.user-phone { color: #999; }
+.user-actions { display: flex; gap: 6px; flex-shrink: 0; margin-left: 10px; }
+.btn-xs { padding: 3px 10px; font-size: 12px; border-radius: 5px; border: 1px solid #e5e7eb; background: #f9fafb; color: #374151; cursor: pointer; }
