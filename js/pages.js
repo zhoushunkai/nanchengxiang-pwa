@@ -8,42 +8,97 @@ const Pages = {};
 Pages.login = function() {
   const el = document.getElementById('page-login');
   if (!el) return;
-  const users = App.getUsers();
-  // 按角色分组
-  const roles = ['总部', '线上稽核', '线下稽核', '区域教练', '店长'];
-  const roleIcons = { '总部': '\u{1F3E2}', '线上稽核': '\u{1F4BB}', '线下稽核': '\u{1F50D}', '区域教练': '\u{1F3C6}', '店长': '\u{1F3EA}' };
 
   let html = '<div class="login-page">';
-  html += '<div class="login-logo">\u{2615}</div>';
+  html += '<div class="login-logo">&#9749;</div>';
   html += '<div class="login-title">南城香协作终端</div>';
   html += '<div class="login-subtitle">门店协作管理平台</div>';
-  html += '<div class="login-card">';
-  html += '<div class="card-title">选择登录角色</div>';
 
-  roles.forEach(role => {
-    const roleUsers = users.filter(u => u.role === role);
-    if (roleUsers.length === 0) return;
-    html += '<div class="section-title">' + roleIcons[role] + ' ' + role + '</div>';
-    html += '<div class="role-grid">';
-    roleUsers.forEach(u => {
-      html += '<div class="role-option" onclick="Pages.doLogin(\'' + u.id + '\')">';
-      html += '<span class="role-icon">' + (roleIcons[role] || '\u{1F464}') + '</span>';
-      html += u.name;
-      if (u.store) html += '<br><small>(' + u.store + ')</small>';
-      if (u.area) html += '<br><small>(' + u.area + ')</small>';
-      html += '</div>';
-    });
-    html += '</div>';
-  });
+  // 手机号登录表单
+  html += '<div class="phone-login-card">';
+  html += '<div class="card-title">手机号登录</div>';
+  html += '<div class="phone-input-group">';
+  html += '<span class="phone-prefix">+86</span>';
+  html += '<input type="tel" id="phone-input" class="phone-input" placeholder="请输入手机号" maxlength="11" value="' + (App._phoneLoginNumber || '') + '" oninput="Pages.onPhoneInput()">';
+  html += '</div>';
+  html += '<button class="sms-btn" id="sms-btn" onclick="Pages.sendCode()">获取验证码</button>';
+  html += '<div class="code-input-group" id="code-group" style="display:none">';
+  html += '<input type="text" id="code-input" class="code-input" placeholder="输入6位验证码" maxlength="6" oninput="Pages.onCodeInput()">';
+  html += '<button class="login-btn" id="login-submit-btn" onclick="Pages.doPhoneLogin()" disabled>登录</button>';
+  html += '</div>';
+  html += '</div>';
 
-  html += '<button class="wechat-btn" onclick="App.toast(\'微信授权模拟：已授权\'); setTimeout(function(){ location.hash=\'#home\'; }, 800);">\u{1F4F1} 微信授权登录（模拟）</button>';
+  html += '<div class="login-divider"><span>或</span></div>';
   html += '<button class="skip-btn" onclick="App.quickLogin(); location.hash=\'#home\';">跳过登录，直接预览首页</button>';
-  html += '</div></div>';
+  html += '</div>';
   el.innerHTML = html;
 };
 
-Pages.doLogin = function(userId) {
-  if (App.login(userId)) {
+Pages._phoneCode = '';
+Pages._phoneLoginNumber = '';
+Pages._countdownTimer = null;
+
+Pages.onPhoneInput = function() {
+  var phone = document.getElementById('phone-input').value.replace(/\D/g,'');
+  var btn = document.getElementById('sms-btn');
+  btn.disabled = phone.length !== 11 || Pages._countdownTimer !== null;
+};
+
+Pages.sendCode = function() {
+  var phone = document.getElementById('phone-input').value.replace(/\D/g,'');
+  if (phone.length !== 11) return;
+  Pages._phoneLoginNumber = phone;
+  App._phoneLoginNumber = phone;
+  // 模拟发送验证码（实际应调 SMS 接口）
+  Pages._phoneCode = String(Math.floor(100000 + Math.random() * 900000));
+  App.toast('验证码：' + Pages._phoneCode + '（演示模式，实际将发送短信）');
+
+  // 显示验证码输入区
+  document.getElementById('code-group').style.display = 'block';
+  document.getElementById('code-input').focus();
+
+  // 倒计时
+  var btn = document.getElementById('sms-btn');
+  var sec = 60;
+  Pages._countdownTimer = setInterval(function() {
+    sec--;
+    if (sec <= 0) {
+      clearInterval(Pages._countdownTimer);
+      Pages._countdownTimer = null;
+      btn.textContent = '重新获取';
+      btn.disabled = false;
+    } else {
+      btn.textContent = sec + '秒后重发';
+      btn.disabled = true;
+    }
+  }, 1000);
+};
+
+Pages.onCodeInput = function() {
+  var code = document.getElementById('code-input').value;
+  document.getElementById('login-submit-btn').disabled = code.length !== 6;
+};
+
+Pages.doPhoneLogin = function() {
+  var code = document.getElementById('code-input').value;
+  if (code !== Pages._phoneCode) {
+    App.toast('验证码错误');
+    return;
+  }
+  // 按手机号匹配用户
+  var users = App.getUsers();
+  var user = null;
+  for (var i = 0; i < users.length; i++) {
+    if (users[i].phone === Pages._phoneLoginNumber) {
+      user = users[i];
+      break;
+    }
+  }
+  if (!user) {
+    App.toast('该手机号未注册');
+    return;
+  }
+  if (App.login(user.id)) {
     App.toast('登录成功');
     location.hash = '#home';
   }
