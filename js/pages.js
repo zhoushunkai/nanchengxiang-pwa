@@ -95,8 +95,18 @@ Pages.doPhoneLogin = function() {
     }
   }
   if (!user) {
-    App.toast('该手机号未注册');
-    return;
+    // 兜底查 seedData 确保种子账号始终能登录
+    var seedUsers = App.seedData && App.seedData.users ? App.seedData.users : [];
+    for (var j = 0; j < seedUsers.length; j++) {
+      if (seedUsers[j].phone === Pages._phoneLoginNumber) {
+        user = seedUsers[j];
+        break;
+      }
+    }
+    if (!user) {
+      App.toast('该手机号未注册');
+      return;
+    }
   }
   if (App.login(user.id)) {
     App.toast('登录成功');
@@ -329,7 +339,7 @@ Pages._userForm = function(id) {
   var isEdit = !!u;
   var title = isEdit ? '编辑人员' : '新增人员';
 
-  var html = '<div class="modal-overlay" onclick="this.remove()"><div class="modal-sheet" onclick="event.stopPropagation()">';
+  var html = '<div class="modal-overlay" onclick="this.remove()"><div class="modal-box" onclick="event.stopPropagation()">';
   html += '<div class="modal-header"><h3>' + title + '</h3><span class="modal-close" onclick="this.closest(\'.modal-overlay\').remove()">&times;</span></div>';
   html += '<div class="modal-body">';
 
@@ -369,7 +379,10 @@ Pages._userForm = function(id) {
 
   var div = document.createElement('div');
   div.innerHTML = html;
-  document.body.appendChild(div.firstElementChild);
+  var overlay = div.firstElementChild;
+  document.body.appendChild(overlay);
+  overlay.offsetHeight;
+  overlay.classList.add('show');
 };
 
 Pages._userSave = async function(id) {
@@ -864,6 +877,8 @@ Pages.complaint = function() {
   let listComplaints = complaints;
   if (user.role === '店长') {
     listComplaints = complaints.filter(c => c.storeId === user.storeId);
+  } else if (user.role === '区域教练' && user.area) {
+    listComplaints = complaints.filter(c => stores.filter(s => s.region === user.area).some(s => s.id === c.storeId));
   }
 
   html += '<div class="card"><div class="card-title">差评列表（共 ' + listComplaints.length + ' 条）</div>';
@@ -1256,7 +1271,7 @@ Pages._templateForm = function(index) {
   var isEdit = !!t;
   var title = isEdit ? '编辑模板' : '新建模板';
 
-  var html = '<div class="modal-overlay" onclick="this.remove()"><div class="modal-sheet" onclick="event.stopPropagation()">';
+  var html = '<div class="modal-overlay" onclick="this.remove()"><div class="modal-box" onclick="event.stopPropagation()">';
   html += '<div class="modal-header"><h3>' + title + '</h3><span class="modal-close" onclick="this.closest(\'.modal-overlay\').remove()">&times;</span></div>';
   html += '<div class="modal-body">';
 
@@ -1299,7 +1314,10 @@ Pages._templateForm = function(index) {
 
   var div = document.createElement('div');
   div.innerHTML = html;
-  document.body.appendChild(div.firstElementChild);
+  var overlay = div.firstElementChild;
+  document.body.appendChild(overlay);
+  overlay.offsetHeight;
+  overlay.classList.add('show');
 };
 
 Pages._templateSave = function(index) {
@@ -1336,4 +1354,262 @@ Pages._templateDelete = function(index) {
   localStorage.setItem('nanchengxiang_notices', JSON.stringify(templates));
   App.toast('模板已删除');
   Pages.template();
+};
+
+/* ==================== 稽核员日报 ==================== */
+Pages._dailyMode = 'fill'; // 'fill' | 'board'
+
+Pages.daily = function() {
+  var el = document.getElementById('page-daily');
+  if (!el) return;
+  var user = App.currentUser;
+  var stores = App.getStores();
+  var reports = App.getDailyReports();
+  var mode = Pages._dailyMode;
+  var now = new Date();
+  var today = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0');
+
+  var html = '';
+
+  // 模式切换
+  html += '<div class="daily-mode-bar">';
+  html += '<button class="daily-mode-btn' + (mode==='fill'?' active':'') + '" onclick="Pages._switchDaily(\'fill\')">填写日报</button>';
+  html += '<button class="daily-mode-btn' + (mode==='board'?' active':'') + '" onclick="Pages._switchDaily(\'board\')">日报看板</button>';
+  html += '</div>';
+
+  if (mode === 'fill') {
+    // ===== 填写日报 =====
+    html += '<div class="card">';
+    html += '<div class="card-title">稽核员日报</div>';
+
+    html += '<div class="daily-meta">';
+    html += '<span>稽核员：<b>' + user.name + '</b></span>';
+    html += '<span>日期：<b>' + today + '</b></span>';
+    html += '</div>';
+
+    html += '<div class="form-group"><label class="form-label">稽核类型</label>';
+    html += '<div class="daily-type-radios">';
+    html += '<label class="radio-label"><input type="radio" name="daily-type" value="online" checked onchange="Pages._dailyTypeChange()"> 线上稽核</label>';
+    html += '<label class="radio-label"><input type="radio" name="daily-type" value="offline" onchange="Pages._dailyTypeChange()"> 线下稽核</label>';
+    html += '</div></div>';
+
+    html += '<div id="daily-items-container">';
+    html += Pages._dailyRow(1);
+    html += '</div>';
+
+    html += '<button class="daily-add-btn" id="daily-add-btn" onclick="Pages._dailyAddRow()">+ 添加门店</button>';
+    html += '<button class="btn btn-primary" style="margin-top:12px" onclick="Pages.submitDaily()">提交日报</button>';
+    html += '</div>';
+
+    // 已提交列表
+    var userReports = reports.filter(function(r) { return r.inspector === user.name; }).reverse();
+    html += '<div class="card"><div class="card-title">已提交日报（' + userReports.length + '）</div>';
+    if (userReports.length === 0) {
+      html += '<div class="empty-state"><div class="empty-icon">&#128196;</div>暂无日报</div>';
+    } else {
+      userReports.forEach(function(r) {
+        var typeLabel = r.type === 'online' ? '线上' : '线下';
+        html += '<div class="list-item" onclick="Pages._toggleDailyDetail(\'' + r.id + '\')">';
+        html += '<div class="li-main">';
+        html += '<div class="li-title">' + r.date + ' | ' + typeLabel + '稽核 | ' + (r.items||[]).length + '家门店</div>';
+        html += '<div class="li-sub">稽核员：' + r.inspector + '</div>';
+        html += '</div></div>';
+        html += '<div id="daily-detail-' + r.id + '" class="daily-detail" style="display:none">';
+        (r.items||[]).forEach(function(item) {
+          html += '<div class="daily-detail-row"><span class="ddr-store">' + item.store + '</span><span class="ddr-score">' + item.score + '分</span><span class="ddr-findings">' + (item.findings||'无') + '</span></div>';
+        });
+        html += '</div>';
+      });
+    }
+    html += '</div>';
+
+  } else {
+    // ===== 日报看板 =====
+    html += Pages._renderDailyBoard(reports, stores);
+  }
+
+  el.innerHTML = html;
+};
+
+Pages._switchDaily = function(mode) {
+  Pages._dailyMode = mode;
+  Pages.daily();
+};
+
+Pages._dailyRow = function(index) {
+  var stores = App.getStores();
+  var html = '<div class="daily-row" id="daily-row-' + index + '">';
+  html += '<select class="form-select daily-store" id="daily-store-' + index + '">';
+  html += '<option value="">-- 选择门店 --</option>';
+  stores.forEach(function(s) {
+    html += '<option value="' + s.name + '">' + s.name + '</option>';
+  });
+  html += '</select>';
+  html += '<input type="number" class="form-input daily-score" id="daily-score-' + index + '" placeholder="得分" min="0" max="100">';
+  html += '<input type="text" class="form-input daily-findings" id="daily-findings-' + index + '" placeholder="发现问题">';
+  if (index > 1) {
+    html += '<button class="daily-del-btn" onclick="Pages._dailyRemoveRow(' + index + ')">&#10005;</button>';
+  }
+  html += '</div>';
+  return html;
+};
+
+Pages._dailyTypeChange = function() {
+  var type = document.querySelector('input[name="daily-type"]:checked').value;
+  var max = type === 'online' ? 8 : 5;
+  var currentRows = document.querySelectorAll('.daily-row').length;
+  var btn = document.getElementById('daily-add-btn');
+  if (btn) btn.disabled = currentRows >= max;
+};
+
+Pages._dailyAddRow = function() {
+  var type = document.querySelector('input[name="daily-type"]:checked').value;
+  var max = type === 'online' ? 8 : 5;
+  var rows = document.querySelectorAll('.daily-row');
+  if (rows.length >= max) return;
+  var nextIndex = rows.length + 1;
+  var html = Pages._dailyRow(nextIndex);
+  var container = document.getElementById('daily-items-container');
+  var div = document.createElement('div');
+  div.innerHTML = html;
+  container.appendChild(div.firstElementChild);
+  if (rows.length + 1 >= max) {
+    document.getElementById('daily-add-btn').disabled = true;
+  }
+};
+
+Pages._dailyRemoveRow = function(index) {
+  var row = document.getElementById('daily-row-' + index);
+  if (row) row.remove();
+  var type = document.querySelector('input[name="daily-type"]:checked').value;
+  var max = type === 'online' ? 8 : 5;
+  var currentRows = document.querySelectorAll('.daily-row').length;
+  var btn = document.getElementById('daily-add-btn');
+  if (btn) btn.disabled = currentRows >= max;
+};
+
+Pages.submitDaily = function() {
+  var user = App.currentUser;
+  var typeEl = document.querySelector('input[name="daily-type"]:checked');
+  var type = typeEl ? typeEl.value : 'online';
+  var now = new Date();
+  var date = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0');
+
+  var items = [];
+  var rows = document.querySelectorAll('.daily-row');
+  for (var i = 0; i < rows.length; i++) {
+    var idx = i + 1;
+    var storeEl = document.getElementById('daily-store-' + idx);
+    var scoreEl = document.getElementById('daily-score-' + idx);
+    var findingsEl = document.getElementById('daily-findings-' + idx);
+    var store = storeEl ? storeEl.value : '';
+    var score = scoreEl ? parseInt(scoreEl.value) : NaN;
+    var findings = findingsEl ? findingsEl.value.trim() : '';
+    if (!store) { App.toast('第' + idx + '行请选择门店'); return; }
+    if (isNaN(score) || score < 0 || score > 100) { App.toast('第' + idx + '行得分需在0-100之间'); return; }
+    items.push({ store: store, score: score, findings: findings });
+  }
+
+  if (items.length === 0) { App.toast('请至少添加一条门店记录'); return; }
+
+  var reports = App.getDailyReports();
+  reports.push({
+    id: 'dr' + Date.now(),
+    inspector: user.name,
+    date: date,
+    type: type,
+    items: items
+  });
+
+  App.saveDailyReports(reports);
+  App.toast('日报已提交');
+  Pages.daily();
+};
+
+Pages._toggleDailyDetail = function(id) {
+  var el = document.getElementById('daily-detail-' + id);
+  if (el) {
+    el.style.display = el.style.display === 'none' ? 'block' : 'none';
+  }
+};
+
+/* ===== 日报看板渲染 ===== */
+Pages._dailyBoardPeriod = 'all'; // 'week' | 'month' | 'all'
+
+Pages._renderDailyBoard = function(reports, stores) {
+  var html = '';
+  var now = new Date();
+
+  // 时间筛选
+  html += '<div class="db-toggle-bar">';
+  html += '<button class="db-toggle-btn' + (Pages._dailyBoardPeriod==='week'?' active':'') + '" onclick="Pages._switchBoardPeriod(\'week\')">本周</button>';
+  html += '<button class="db-toggle-btn' + (Pages._dailyBoardPeriod==='month'?' active':'') + '" onclick="Pages._switchBoardPeriod(\'month\')">本月</button>';
+  html += '<button class="db-toggle-btn' + (Pages._dailyBoardPeriod==='all'?' active':'') + '" onclick="Pages._switchBoardPeriod(\'all\')">全部</button>';
+  html += '</div>';
+
+  // 按period过滤
+  var filtered = reports;
+  if (Pages._dailyBoardPeriod === 'week') {
+    var weekStart = new Date(now);
+    weekStart.setDate(now.getDate() - now.getDay());
+    weekStart.setHours(0,0,0,0);
+    filtered = reports.filter(function(r) { return new Date(r.date) >= weekStart; });
+  } else if (Pages._dailyBoardPeriod === 'month') {
+    var monthStart = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-01';
+    filtered = reports.filter(function(r) { return r.date >= monthStart; });
+  }
+
+  // 按稽核员分组
+  var groups = {};
+  filtered.forEach(function(r) {
+    if (!groups[r.inspector]) groups[r.inspector] = [];
+    groups[r.inspector].push(r);
+  });
+
+  var inspectorNames = Object.keys(groups).sort();
+  if (inspectorNames.length === 0) {
+    html += '<div class="empty-state"><div class="empty-icon">&#128202;</div>暂无日报数据</div>';
+    return html;
+  }
+
+  inspectorNames.forEach(function(name) {
+    var grp = groups[name];
+    var totalShops = 0;
+    grp.forEach(function(r) { totalShops += (r.items||[]).length; });
+
+    html += '<div class="board-inspector-card" onclick="Pages._toggleBoardDetail(\'' + name.replace(/'/g, "\\'") + '\')">';
+    html += '<div class="bic-header">';
+    html += '<div class="bic-avatar">' + (name||'?')[0] + '</div>';
+    html += '<div class="bic-info">';
+    html += '<div class="bic-name">' + name + '</div>';
+    html += '<div class="bic-stats">日报 ' + grp.length + ' 份 | 累计检查 ' + totalShops + ' 家门店</div>';
+    html += '</div><div class="bic-arrow">&#9660;</div>';
+    html += '</div>';
+
+    html += '<div class="board-detail-table" id="board-detail-' + name.replace(/'/g, "\\'") + '" style="display:none">';
+    html += '<table class="m-table">';
+    html += '<thead><tr><th>日期</th><th>类型</th><th>门店</th><th>得分</th><th>发现问题</th></tr></thead>';
+    html += '<tbody>';
+    grp.forEach(function(r) {
+      var typeLabel = r.type === 'online' ? '线上' : '线下';
+      (r.items||[]).forEach(function(item) {
+        html += '<tr><td>' + r.date + '</td><td>' + typeLabel + '</td><td>' + item.store + '</td><td>' + item.score + '</td><td>' + (item.findings||'') + '</td></tr>';
+      });
+    });
+    html += '</tbody></table></div></div>';
+  });
+
+  return html;
+};
+
+Pages._switchBoardPeriod = function(period) {
+  Pages._dailyBoardPeriod = period;
+  Pages.daily();
+};
+
+Pages._toggleBoardDetail = function(name) {
+  var el = document.getElementById('board-detail-' + name);
+  if (el) {
+    el.style.display = el.style.display === 'none' ? 'block' : 'none';
+  }
 };

@@ -15,7 +15,9 @@ const App = {
   dataReady: false,    // 缓存是否就绪
 
   /* ---- 种子数据（首次初始化用，camelCase 兼容旧代码） ---- */
+  // daily_reports: [{ id, inspector, date, type('online'|'offline'), items: [{ store, score, findings }] }]
   seedData: {
+    daily_reports: [],
     stores: [
       { id: 'FZ001', name: '方庄店', district: '朝阳区', adminArea: '朝阳区', bizArea: '经营一区', region: '经营一区', manager: '张三', managerTitle: '门店第一负责人', mode: '2.0' },
       { id: 'WJ001', name: '望京店', district: '朝阳区', adminArea: '朝阳区', bizArea: '经营一区', region: '经营一区', manager: '李四', managerTitle: '门店第一负责人', mode: '2.5' },
@@ -42,7 +44,7 @@ const App = {
       { id: 'u013', name: '孙七', role: '店长', area: '', storeId: 'HD001', store: '海淀黄庄店', phone: '13800000013' },
       { id: 'u014', name: '周八', role: '店长', area: '', storeId: 'DC001', store: '东城王府井店', phone: '13800000014' }
     ],
-    regionCoaches: [
+    region_coaches: [
       { region: '经营一区', coach: '教练A', storeCount: 3 },
       { region: '经营二区', coach: '教练B', storeCount: 2 },
       { region: '经营三区', coach: '教练C', storeCount: 1 },
@@ -104,7 +106,7 @@ const App = {
   },
 
   /* ---- 表名映射 ---- */
-  tables: ['stores', 'users', 'region_coaches', 'penalties', 'complaints', 'online_records', 'offline_records'],
+  tables: ['stores', 'users', 'region_coaches', 'penalties', 'complaints', 'online_records', 'offline_records', 'daily_reports'],
 
   /* ==================== 初始化 ==================== */
   async init() {
@@ -156,6 +158,7 @@ const App = {
       localStorage.setItem('nanchengxiang_complaints', JSON.stringify(this.seedData.complaints));
       localStorage.setItem('nanchengxiang_online_records', JSON.stringify(this.seedData.online_records));
       localStorage.setItem('nanchengxiang_offline_records', JSON.stringify(this.seedData.offline_records));
+      localStorage.setItem('nanchengxiang_daily_reports', JSON.stringify(this.seedData.daily_reports));
     }
     this.dataCache.stores = JSON.parse(localStorage.getItem('nanchengxiang_stores') || '[]');
     this.dataCache.users = JSON.parse(localStorage.getItem('nanchengxiang_users') || '[]');
@@ -164,6 +167,7 @@ const App = {
     this.dataCache.complaints = JSON.parse(localStorage.getItem('nanchengxiang_complaints') || '[]');
     this.dataCache.online_records = JSON.parse(localStorage.getItem('nanchengxiang_online_records') || '[]');
     this.dataCache.offline_records = JSON.parse(localStorage.getItem('nanchengxiang_offline_records') || '[]');
+    this.dataCache.daily_reports = JSON.parse(localStorage.getItem('nanchengxiang_daily_reports') || '[]');
     this.dataCache.notices = JSON.parse(localStorage.getItem('nanchengxiang_notices') || '[]');
     this.dataReady = true;
   },
@@ -211,6 +215,17 @@ const App = {
   getOnlineRecords()   { return this.dataCache.online_records || []; },
   getOfflineRecords()  { return this.dataCache.offline_records || []; },
   getRegionCoaches()   { return this.dataCache.region_coaches || []; },
+  getDailyReports()   { return this.dataCache.daily_reports || []; },
+
+  async saveDailyReports(data) {
+    this.dataCache.daily_reports = data;
+    if (this.supabase) {
+      await this.supabase.from('daily_reports').delete().neq('id', '__none__');
+      if (data.length > 0) await this.supabase.from('daily_reports').insert(this._snakeList(data));
+    } else {
+      localStorage.setItem('nanchengxiang_daily_reports', JSON.stringify(data));
+    }
+  },
 
   async savePenalties(data) {
     this.dataCache.penalties = data;
@@ -323,7 +338,7 @@ const App = {
       }
     }
 
-    var tabPages = ['home', 'inspection', 'penalty', 'complaint', 'dashboard', 'template'];
+    var tabPages = ['home', 'inspection', 'penalty', 'complaint', 'dashboard', 'template', 'daily'];
     document.querySelectorAll('.tab-item').forEach(function(t) {
       t.classList.toggle('active', t.dataset.page === hash);
     });
@@ -333,7 +348,8 @@ const App = {
 
     var titleMap = {
       login: '南城香协作终端', home: '首页', inspection: '门店检查', 'offline-inspect': '线下门店检查',
-      penalty: '处罚登记', complaint: '差评申诉', dashboard: '领导看板', template: '通知模板', admin: '数据管理'
+      penalty: '处罚登记', complaint: '差评申诉', dashboard: '领导看板', template: '通知模板', admin: '数据管理',
+      daily: '稽核日报'
     };
     document.getElementById('header-title').textContent = titleMap[hash] || '';
     document.getElementById('header-back').style.display = (hash === 'offline-inspect' || hash === 'login') ? 'none' : 'none';
@@ -345,6 +361,10 @@ const App = {
         location.hash = '#' + tab.dataset.page;
       });
     });
+  },
+
+  navigate(page) {
+    location.hash = '#' + page;
   },
 
   /* ==================== 登录 ==================== */
@@ -476,6 +496,18 @@ const App = {
     } else if (type === 'users') {
       data = this.getUsers();
       headers = ['id', 'name', 'role', 'area', 'storeId', 'store', 'phone'];
+    } else if (type === 'daily_reports') {
+      data = [];
+      var reports = this.getDailyReports();
+      reports.forEach(function(r) {
+        (r.items || []).forEach(function(item) {
+          data.push({
+            id: r.id, inspector: r.inspector, date: r.date, type: r.type,
+            store: item.store, score: item.score, findings: item.findings
+          });
+        });
+      });
+      headers = ['id', 'inspector', 'date', 'type', 'store', 'score', 'findings'];
     } else {
       var stores = this.getStores();
       var penalties = this.getPenalties();
