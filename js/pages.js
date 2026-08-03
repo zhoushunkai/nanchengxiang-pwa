@@ -292,18 +292,18 @@ Pages.admin = function() {
 
   html += '<div class="card">';
   html += '<div class="card-title">导入人员</div>';
-  html += '<div class="card-desc">CSV 格式：id, 姓名, 角色(总部/线上稽核/线下稽核/区域教练/店长), 区域/区, 门店ID, 门店名, 手机号</div>';
+  html += '<div class="card-desc">XLS 格式：id, 姓名, 角色(总部/线上稽核/线下稽核/区域教练/店长), 区域/区, 门店ID, 门店名, 手机号</div>';
   html += '<div style="margin:8px 0"><button class="btn btn-xs btn-outline" onclick="App.downloadTemplate(\'users\')">下载人员模板</button></div>';
-  html += '<input type="file" accept=".csv" onchange="App.importCSV(this, \'users\')" style="display:none" id="file-users">';
-  html += '<button class="btn btn-primary" style="width:100%" onclick="document.getElementById(\'file-users\').click()">选择人员 CSV 并导入</button>';
+  html += '<input type="file" accept=".xls,.xlsx" onchange="App.importXLS(this, \'users\')" style="display:none" id="file-users">';
+  html += '<button class="btn btn-primary" style="width:100%" onclick="document.getElementById(\'file-users\').click()">选择人员 XLS 并导入</button>';
   html += '</div>';
 
   html += '<div class="card">';
   html += '<div class="card-title">导入门店</div>';
-  html += '<div class="card-desc">CSV 格式：门店ID, 门店名, 行政区, 行政区域, 经营区, 区域, 店长, 店长称谓, 经营模式</div>';
+  html += '<div class="card-desc">XLS 格式：门店ID, 门店名, 行政区, 行政区域, 经营区, 区域, 店长, 店长称谓, 经营模式</div>';
   html += '<div style="margin:8px 0"><button class="btn btn-xs btn-outline" onclick="App.downloadTemplate(\'stores\')">下载门店模板</button></div>';
-  html += '<input type="file" accept=".csv" onchange="App.importCSV(this, \'stores\')" style="display:none" id="file-stores">';
-  html += '<button class="btn btn-primary" style="width:100%" onclick="document.getElementById(\'file-stores\').click()">选择门店 CSV 并导入</button>';
+  html += '<input type="file" accept=".xls,.xlsx" onchange="App.importXLS(this, \'stores\')" style="display:none" id="file-stores">';
+  html += '<button class="btn btn-primary" style="width:100%" onclick="document.getElementById(\'file-stores\').click()">选择门店 XLS 并导入</button>';
   html += '</div>';
 
   /* ===== 数据导出 ===== */
@@ -311,22 +311,22 @@ Pages.admin = function() {
 
   html += '<div class="card">';
   html += '<div class="card-title">导出人员数据</div>';
-  html += '<button class="btn btn-outline" style="width:100%" onclick="App.exportCSV(\'users\')">下载人员 CSV</button>';
+  html += '<button class="btn btn-outline" style="width:100%" onclick="App.exportXLS(\'users\')">下载人员 XLS</button>';
   html += '</div>';
 
   html += '<div class="card">';
   html += '<div class="card-title">导出处罚数据</div>';
-  html += '<button class="btn btn-outline" style="width:100%" onclick="App.exportCSV(\'penalties\')">下载处罚 CSV</button>';
+  html += '<button class="btn btn-outline" style="width:100%" onclick="App.exportXLS(\'penalties\')">下载处罚 XLS</button>';
   html += '</div>';
 
   html += '<div class="card">';
   html += '<div class="card-title">导出差评数据</div>';
-  html += '<button class="btn btn-outline" style="width:100%" onclick="App.exportCSV(\'complaints\')">下载差评 CSV</button>';
+  html += '<button class="btn btn-outline" style="width:100%" onclick="App.exportXLS(\'complaints\')">下载差评 XLS</button>';
   html += '</div>';
 
   html += '<div class="card">';
   html += '<div class="card-title">导出看板汇总</div>';
-  html += '<button class="btn btn-outline" style="width:100%" onclick="App.exportCSV(\'dashboard\')">下载看板 CSV</button>';
+  html += '<button class="btn btn-outline" style="width:100%" onclick="App.exportXLS(\'dashboard\')">下载看板 XLS</button>';
   html += '</div>';
 
   document.getElementById('page-admin').innerHTML = html;
@@ -1354,6 +1354,13 @@ Pages._templateDelete = function(index) {
   localStorage.setItem('nanchengxiang_notices', JSON.stringify(templates));
   App.toast('模板已删除');
   Pages.template();
+};
+
+/* ==================== 任务发布 ==================== */
+Pages.task = function() {
+  var el = document.getElementById('page-task');
+  if (!el) return;
+  el.innerHTML = '<div class="empty-state"><div class="empty-icon">&#128203;</div><div>建设中</div></div>';
 };
 
 /* ==================== 稽核员日报 ==================== */

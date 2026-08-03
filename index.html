@@ -9,6 +9,7 @@
   <link rel="manifest" href="manifest.json">
   <link rel="stylesheet" href="css/app.css">
   <title>南城香协作终端</title>
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 </head>
 <body>
 
@@ -49,6 +50,9 @@
     <!-- 数据管理（总部专享） -->
     <div class="page" id="page-admin"></div>
 
+    <!-- 任务发布 -->
+    <div class="page" id="page-task"></div>
+
   </main>
 
   <!-- 底部 TabBar -->
@@ -80,6 +84,10 @@
     <div class="tab-item" data-page="template">
       <span class="tab-icon">&#128276;</span>
       <span>通知</span>
+    </div>
+    <div class="tab-item" data-page="task">
+      <span class="tab-icon">&#128203;</span>
+      <span>任务</span>
     </div>
   </nav>
 

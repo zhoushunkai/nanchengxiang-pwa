@@ -219,57 +219,51 @@ const App = {
 
   async saveDailyReports(data) {
     this.dataCache.daily_reports = data;
+    localStorage.setItem('nanchengxiang_daily_reports', JSON.stringify(data));
     if (this.supabase) {
       await this.supabase.from('daily_reports').delete().neq('id', '__none__');
       if (data.length > 0) await this.supabase.from('daily_reports').insert(this._snakeList(data));
-    } else {
-      localStorage.setItem('nanchengxiang_daily_reports', JSON.stringify(data));
     }
   },
 
   async savePenalties(data) {
     this.dataCache.penalties = data;
+    localStorage.setItem('nanchengxiang_penalties', JSON.stringify(data));
     if (this.supabase) {
       await this.supabase.from('penalties').delete().neq('id', '__none__');
       if (data.length > 0) await this.supabase.from('penalties').insert(this._snakeList(data));
-    } else {
-      localStorage.setItem('nanchengxiang_penalties', JSON.stringify(data));
     }
   },
   async saveComplaints(data) {
     this.dataCache.complaints = data;
+    localStorage.setItem('nanchengxiang_complaints', JSON.stringify(data));
     if (this.supabase) {
       await this.supabase.from('complaints').delete().neq('id', '__none__');
       if (data.length > 0) await this.supabase.from('complaints').insert(this._snakeList(data));
-    } else {
-      localStorage.setItem('nanchengxiang_complaints', JSON.stringify(data));
     }
   },
   async saveOnlineRecords(data) {
     this.dataCache.online_records = data;
+    localStorage.setItem('nanchengxiang_online_records', JSON.stringify(data));
     if (this.supabase) {
       await this.supabase.from('online_records').delete().neq('id', '__none__');
       if (data.length > 0) await this.supabase.from('online_records').insert(this._snakeList(data));
-    } else {
-      localStorage.setItem('nanchengxiang_online_records', JSON.stringify(data));
     }
   },
   async saveOfflineRecords(data) {
     this.dataCache.offline_records = data;
+    localStorage.setItem('nanchengxiang_offline_records', JSON.stringify(data));
     if (this.supabase) {
       await this.supabase.from('offline_records').delete().neq('id', '__none__');
       if (data.length > 0) await this.supabase.from('offline_records').insert(this._snakeList(data));
-    } else {
-      localStorage.setItem('nanchengxiang_offline_records', JSON.stringify(data));
     }
   },
   async saveUsers(data) {
     this.dataCache.users = data;
+    localStorage.setItem('nanchengxiang_users', JSON.stringify(data));
     if (this.supabase) {
       await this.supabase.from('users').delete().neq('id', '__none__');
       if (data.length > 0) await this.supabase.from('users').insert(this._snakeList(data));
-    } else {
-      localStorage.setItem('nanchengxiang_users', JSON.stringify(data));
     }
   },
 
@@ -300,11 +294,10 @@ const App = {
   },
   async saveStores(data) {
     this.dataCache.stores = data;
+    localStorage.setItem('nanchengxiang_stores', JSON.stringify(data));
     if (this.supabase) {
       await this.supabase.from('stores').delete().neq('id', '__none__');
       if (data.length > 0) await this.supabase.from('stores').insert(this._snakeList(data));
-    } else {
-      localStorage.setItem('nanchengxiang_stores', JSON.stringify(data));
     }
   },
 
@@ -338,7 +331,7 @@ const App = {
       }
     }
 
-    var tabPages = ['home', 'inspection', 'penalty', 'complaint', 'dashboard', 'template', 'daily'];
+    var tabPages = ['home', 'inspection', 'penalty', 'complaint', 'dashboard', 'template', 'daily', 'task'];
     document.querySelectorAll('.tab-item').forEach(function(t) {
       t.classList.toggle('active', t.dataset.page === hash);
     });
@@ -349,10 +342,10 @@ const App = {
     var titleMap = {
       login: '南城香协作终端', home: '首页', inspection: '门店检查', 'offline-inspect': '线下门店检查',
       penalty: '处罚登记', complaint: '差评申诉', dashboard: '领导看板', template: '通知模板', admin: '数据管理',
-      daily: '稽核日报'
+      daily: '稽核日报', task: '任务发布'
     };
     document.getElementById('header-title').textContent = titleMap[hash] || '';
-    document.getElementById('header-back').style.display = (hash === 'offline-inspect' || hash === 'login') ? 'none' : 'none';
+    document.getElementById('header-back').style.display = (hash === 'login') ? 'none' : 'block';
   },
 
   bindTabBar() {
@@ -407,51 +400,56 @@ const App = {
     setTimeout(function() { el.classList.remove('show'); }, 2000);
   },
 
-  /* ==================== CSV 下载模板 ==================== */
+  /* ==================== XLS 下载模板 ==================== */
   downloadTemplate(type) {
     var headers, sample;
     if (type === 'users') {
-      headers = 'id,name,role,area,storeId,store,phone';
-      sample = 'u099,测试员工,店长,经营一区,FZ001,方庄店,13800000099';
+      headers = ['id','name','role','area','storeId','store','phone'];
+      sample = ['u099','测试员工','店长','经营一区','FZ001','方庄店','13800000099'];
     } else {
-      headers = 'id,name,district,adminArea,bizArea,region,manager,managerTitle,mode';
-      sample = 'S099,测试门店,朝阳区,朝阳区,经营一区,经营一区,张三,门店第一负责人,2.0';
+      headers = ['id','name','district','adminArea','bizArea','region','manager','managerTitle','mode'];
+      sample = ['S099','测试门店','朝阳区','朝阳区','经营一区','经营一区','张三','门店第一负责人','2.0'];
     }
-    var csv = headers + '\n' + sample;
-    var blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8' });
+    var html = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel"><head><meta charset="UTF-8"></head><body><table>';
+    html += '<tr>' + headers.map(function(h) { return '<th>' + h + '</th>'; }).join('') + '</tr>';
+    html += '<tr>' + sample.map(function(c) { return '<td>' + c + '</td>'; }).join('') + '</tr>';
+    html += '</table></body></html>';
+    var blob = new Blob([html], { type: 'application/vnd.ms-excel' });
     var a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = type + '_template.csv';
+    a.download = type + '_template.xls';
     a.click();
   },
 
-  /* ==================== CSV 导入 ==================== */
-  importCSV(input, type) {
+  /* ==================== XLS 导入 ==================== */
+  importXLS(input, type) {
     var self = this;
     var file = input.files[0];
     if (!file) return;
     var reader = new FileReader();
     reader.onload = async function(e) {
-      var text = e.target.result;
-      var lines = text.split(/\r?\n/).filter(function(l) { return l.trim(); });
-      if (lines.length < 2) { self.toast('CSV 文件为空或缺少表头'); return; }
-      var headers = lines[0].split(',').map(function(h) { return h.trim(); });
+      var data = new Uint8Array(e.target.result);
+      var wb = XLSX.read(data, { type: 'array' });
+      var sheet = wb.Sheets[wb.SheetNames[0]];
+      var rows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+      if (rows.length < 2) { self.toast('文件为空或缺少表头'); return; }
+      var headers = rows[0].map(function(h) { return String(h).trim(); });
       var count = 0;
-      var dataRows = lines.slice(1);
+      var dataRows = rows.slice(1);
 
       if (type === 'users') {
         var users = self.getUsers();
         var existingIds = {};
         users.forEach(function(u) { existingIds[u.id] = true; });
         for (var i = 0; i < dataRows.length; i++) {
-          var cols = dataRows[i].split(',');
+          var cols = dataRows[i];
           var row = {};
           for (var j = 0; j < headers.length; j++) {
-            row[headers[j]] = (cols[j] || '').trim();
+            row[headers[j]] = String(cols[j] || '').trim();
           }
           if (!row.id || !row.name) continue;
           if (existingIds[row.id]) continue;
-          users.push({ id: row.id, name: row.name, role: row.role || '店长', area: row.area || '', storeId: row.storeId || '', store: row.store || '' });
+          users.push({ id: row.id, name: row.name, role: row.role || '店长', phone: row.phone || '', area: row.area || '', storeId: row.storeId || '', store: row.store || '' });
           existingIds[row.id] = true;
           count++;
         }
@@ -461,10 +459,10 @@ const App = {
         var existingStoreIds = {};
         stores.forEach(function(s) { existingStoreIds[s.id] = true; });
         for (var i = 0; i < dataRows.length; i++) {
-          var cols = dataRows[i].split(',');
+          var cols = dataRows[i];
           var row = {};
           for (var j = 0; j < headers.length; j++) {
-            row[headers[j]] = (cols[j] || '').trim();
+            row[headers[j]] = String(cols[j] || '').trim();
           }
           if (!row.id || !row.name) continue;
           if (existingStoreIds[row.id]) continue;
@@ -481,11 +479,11 @@ const App = {
       self.toast('成功导入 ' + count + ' 条数据');
       input.value = '';
     };
-    reader.readAsText(file, 'UTF-8');
+    reader.readAsArrayBuffer(file);
   },
 
-  /* ==================== CSV 导出 ==================== */
-  exportCSV(type) {
+  /* ==================== XLS 导出 ==================== */
+  exportXLS(type) {
     var data, headers;
     if (type === 'penalties') {
       data = this.getPenalties();
@@ -526,22 +524,22 @@ const App = {
       });
       headers = ['storeId', 'store', 'district', 'region', 'manager', 'mode', 'totalPenalties', 'closedPenalties', 'totalComplaints', 'passedAppeals'];
     }
-    var csv = '\uFEFF' + headers.join(',') + '\n';
+    var rows = [headers];
     data.forEach(function(row) {
       var vals = headers.map(function(h) {
-        var v = (row[h] !== undefined ? row[h] : '').toString();
-        if (v.indexOf(',') !== -1 || v.indexOf('"') !== -1 || v.indexOf('\n') !== -1) {
-          v = '"' + v.replace(/"/g, '""') + '"';
-        }
-        return v;
+        return row[h] !== undefined ? row[h] : '';
       });
-      csv += vals.join(',') + '\n';
+      rows.push(vals);
     });
-    var blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+    var ws = XLSX.utils.aoa_to_sheet(rows);
+    var wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+    var wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+    var blob = new Blob([wbout], { type: 'application/vnd.ms-excel' });
     var a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
     var now = new Date();
-    a.download = type + '_' + now.getFullYear() + ('0'+(now.getMonth()+1)).slice(-2) + ('0'+now.getDate()).slice(-2) + '.csv';
+    a.download = type + '_' + now.getFullYear() + ('0'+(now.getMonth()+1)).slice(-2) + ('0'+now.getDate()).slice(-2) + '.xls';
     a.click();
     this.toast('导出成功');
   }
