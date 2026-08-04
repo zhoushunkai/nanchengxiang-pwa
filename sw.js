@@ -1,8 +1,11 @@
-const CACHE_NAME = 'nanchengxiang-pwa-v6';
+const CACHE_NAME = 'nanchengxiang-pwa-v15';
 const ASSETS = [
   '/',
   '/index.html',
   '/manifest.json',
+  '/apple-touch-icon.png',
+  '/icon-192.png',
+  '/icon-512.png',
   '/css/app.css',
   '/js/app.js',
   '/js/pages.js'

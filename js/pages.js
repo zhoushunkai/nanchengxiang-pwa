@@ -21,11 +21,7 @@ Pages.login = function() {
   html += '<span class="phone-prefix">+86</span>';
   html += '<input type="tel" id="phone-input" class="phone-input" placeholder="请输入手机号" maxlength="11" value="' + (App._phoneLoginNumber || '') + '" oninput="Pages.onPhoneInput()">';
   html += '</div>';
-  html += '<button class="sms-btn" id="sms-btn" onclick="Pages.sendCode()">获取验证码</button>';
-  html += '<div class="code-input-group" id="code-group" style="display:none">';
-  html += '<input type="text" id="code-input" class="code-input" placeholder="输入6位验证码" maxlength="6" oninput="Pages.onCodeInput()">';
-  html += '<button class="login-btn" id="login-submit-btn" onclick="Pages.doPhoneLogin()" disabled>登录</button>';
-  html += '</div>';
+  html += '<button class="sms-btn" id="sms-btn" onclick="Pages.doPhoneLogin()" disabled>登录</button>';
   html += '</div>';
 
   html += '<div class="login-divider"><span>或</span></div>';
@@ -34,77 +30,45 @@ Pages.login = function() {
   el.innerHTML = html;
 };
 
-Pages._phoneCode = '';
 Pages._phoneLoginNumber = '';
-Pages._countdownTimer = null;
 
 Pages.onPhoneInput = function() {
   var phone = document.getElementById('phone-input').value.replace(/\D/g,'');
   var btn = document.getElementById('sms-btn');
-  btn.disabled = phone.length !== 11 || Pages._countdownTimer !== null;
-};
-
-Pages.sendCode = function() {
-  var phone = document.getElementById('phone-input').value.replace(/\D/g,'');
-  if (phone.length !== 11) return;
-  Pages._phoneLoginNumber = phone;
-  App._phoneLoginNumber = phone;
-  // 模拟发送验证码（实际应调 SMS 接口）
-  Pages._phoneCode = String(Math.floor(100000 + Math.random() * 900000));
-  App.toast('验证码：' + Pages._phoneCode + '（演示模式，实际将发送短信）');
-
-  // 显示验证码输入区
-  document.getElementById('code-group').style.display = 'block';
-  document.getElementById('code-input').focus();
-
-  // 倒计时
-  var btn = document.getElementById('sms-btn');
-  var sec = 60;
-  Pages._countdownTimer = setInterval(function() {
-    sec--;
-    if (sec <= 0) {
-      clearInterval(Pages._countdownTimer);
-      Pages._countdownTimer = null;
-      btn.textContent = '重新获取';
-      btn.disabled = false;
-    } else {
-      btn.textContent = sec + '秒后重发';
-      btn.disabled = true;
-    }
-  }, 1000);
-};
-
-Pages.onCodeInput = function() {
-  var code = document.getElementById('code-input').value;
-  document.getElementById('login-submit-btn').disabled = code.length !== 6;
+  btn.disabled = phone.length !== 11;
+  // 回车直接登录
+  if (phone.length === 11) {
+    document.getElementById('phone-input').onkeydown = function(e) {
+      if (e.key === 'Enter') Pages.doPhoneLogin();
+    };
+  }
 };
 
 Pages.doPhoneLogin = function() {
-  var code = document.getElementById('code-input').value;
-  if (code !== Pages._phoneCode) {
-    App.toast('验证码错误');
-    return;
-  }
+  var phone = document.getElementById('phone-input').value.replace(/\D/g,'');
+  if (phone.length !== 11) { App.toast('请输入完整手机号'); return; }
+  Pages._phoneLoginNumber = phone;
+  App._phoneLoginNumber = phone;
+
   // 按手机号匹配用户
   var users = App.getUsers();
   var user = null;
   for (var i = 0; i < users.length; i++) {
-    if (users[i].phone === Pages._phoneLoginNumber) {
+    if (users[i].phone === phone) {
       user = users[i];
       break;
     }
   }
   if (!user) {
-    // 兜底查 seedData 确保种子账号始终能登录
     var seedUsers = App.seedData && App.seedData.users ? App.seedData.users : [];
     for (var j = 0; j < seedUsers.length; j++) {
-      if (seedUsers[j].phone === Pages._phoneLoginNumber) {
+      if (seedUsers[j].phone === phone) {
         user = seedUsers[j];
         break;
       }
     }
     if (!user) {
-      App.toast('该手机号未注册');
+      App.toast('该手机号未注册，请联系管理员');
       return;
     }
   }
@@ -361,14 +325,7 @@ Pages._userForm = function(id) {
   html += '<input type="text" id="uf-area" class="form-input" value="' + (u ? u.area || '' : '') + '" placeholder="区域教练填写，如：经营一区"></div>';
 
   html += '<div class="form-group"><label>绑定门店</label>';
-  html += '<select id="uf-storeId" class="form-input">';
-  html += '<option value="">-- 不绑定 --</option>';
-  var stores = App.getStores();
-  stores.forEach(function(s) {
-    var sel2 = (u && u.storeId === s.id) ? ' selected' : '';
-    html += '<option value="' + s.id + '"' + sel2 + '>' + s.name + '</option>';
-  });
-  html += '</select></div>';
+  html += App.renderStoreSelect('uf-storeId', stores, u ? u.storeId : '', '输入门店名称搜索...');
 
   html += '</div>';
   html += '<div class="modal-footer">';
@@ -383,6 +340,7 @@ Pages._userForm = function(id) {
   document.body.appendChild(overlay);
   overlay.offsetHeight;
   overlay.classList.add('show');
+  App.initStoreSelect('uf-storeId', App.getStores());
 };
 
 Pages._userSave = async function(id) {
@@ -390,7 +348,7 @@ Pages._userSave = async function(id) {
   var role = (document.getElementById('uf-role') || {}).value || '店长';
   var phone = (document.getElementById('uf-phone') || {}).value || '';
   var area = (document.getElementById('uf-area') || {}).value || '';
-  var storeId = (document.getElementById('uf-storeId') || {}).value || '';
+  var storeId = App.getStoreSelectValue('uf-storeId');
 
   if (!name.trim()) return App.toast('请输入姓名');
 
@@ -560,9 +518,7 @@ Pages['offline-inspect'] = function() {
   let html = '<div class="card"><div class="card-title">\u{1F50D} 线下门店检查</div>';
 
   html += '<div class="form-group"><label class="form-label">门店</label>';
-  html += '<select id="offline-store" class="form-select">';
-  stores.forEach(s => { html += '<option value="' + s.id + '">' + s.name + '</option>'; });
-  html += '</select></div>';
+  html += App.renderStoreSelect('offline-store', stores, '', '输入门店名称搜索...');
 
   html += '<div class="form-group"><label class="form-label">检查日期</label>';
   html += '<input id="offline-date" type="date" class="form-input" value="' + new Date().toISOString().split('T')[0] + '"></div>';
@@ -598,11 +554,12 @@ Pages['offline-inspect'] = function() {
   html += '</div>';
 
   el.innerHTML = html;
+  App.initStoreSelect('offline-store', App.getStores());
 };
 
 Pages.submitOffline = function() {
   const user = App.currentUser;
-  const storeId = document.getElementById('offline-store').value;
+  const storeId = App.getStoreSelectValue('offline-store');
   const store = App.getStores().find(s => s.id === storeId);
   const date = document.getElementById('offline-date').value;
   const score = parseInt(document.getElementById('offline-score').value);
@@ -652,7 +609,7 @@ Pages.penalty = function() {
     html += '</select></div>';
 
     html += '<div class="form-group"><label class="form-label">门店</label>';
-    html += '<select id="pen-store" class="form-select"><option value="">请先选区域</option></select></div>';
+    html += App.renderStoreSelect('pen-store', stores, '', '输入门店名称搜索...');
 
     html += '<div class="form-group"><label class="form-label">门店第一负责人</label>';
     html += '<input id="pen-manager" class="form-input" placeholder="自动填充"></div>';
@@ -734,25 +691,27 @@ Pages.penalty = function() {
   html += '</div>';
 
   el.innerHTML = html;
+  App.initStoreSelect('pen-store', stores, function(sid) {
+    var s = App.getStores().find(function(x) { return x.id === sid; });
+    document.getElementById('pen-manager').value = s ? (s.managerTitle ? s.managerTitle + s.manager : s.manager) : '';
+  });
 };
 
 Pages.penaltyRegionChange = function() {
   const region = document.getElementById('pen-region').value;
-  const stores = App.getStores();
-  const sel = document.getElementById('pen-store');
-  sel.innerHTML = '<option value="">请选择门店</option>';
-  stores.filter(s => s.district === region).forEach(s => {
-    sel.innerHTML += '<option value="' + s.id + '" data-manager="' + s.manager + '">' + s.name + '</option>';
+  const allStores = App.getStores();
+  const filtered = region ? allStores.filter(s => s.district === region) : allStores;
+  App.resetStoreSelect('pen-store');
+  App.initStoreSelect('pen-store', filtered, function(sid) {
+    var s = App.getStores().find(function(x) { return x.id === sid; });
+    document.getElementById('pen-manager').value = s ? (s.managerTitle ? s.managerTitle + s.manager : s.manager) : '';
   });
 };
 
 Pages.submitPenalty = function() {
-  const storeId = document.getElementById('pen-store').value;
-  const storeEl = document.getElementById('pen-store');
-  const managerEl = document.getElementById('pen-manager');
-  const selectedOption = storeEl.options[storeEl.selectedIndex];
-  const storeName = selectedOption ? selectedOption.text : '';
+  const storeId = App.getStoreSelectValue('pen-store');
   const storeData = App.getStores().find(s => s.id === storeId);
+  const storeName = storeData ? storeData.name : '';
 
   const penalties = App.getPenalties();
   penalties.push({
@@ -844,9 +803,7 @@ Pages.complaint = function() {
   html += '<div class="card"><div class="card-title">\u{1F4AC} 差评录入</div>';
 
   html += '<div class="form-group"><label class="form-label">门店</label>';
-  html += '<select id="comp-store" class="form-select">';
-  stores.forEach(s => { html += '<option value="' + s.id + '">' + s.name + '</option>'; });
-  html += '</select></div>';
+  html += App.renderStoreSelect('comp-store', stores, '', '输入门店名称搜索...');
 
   html += '<div class="form-group"><label class="form-label">日期</label>';
   html += '<input id="comp-date" type="date" class="form-input" value="' + new Date().toISOString().split('T')[0] + '"></div>';
@@ -902,10 +859,11 @@ Pages.complaint = function() {
   html += '</div>';
 
   el.innerHTML = html;
+  App.initStoreSelect('comp-store', stores);
 };
 
 Pages.submitComplaint = function() {
-  const storeId = document.getElementById('comp-store').value;
+  const storeId = App.getStoreSelectValue('comp-store');
   const store = App.getStores().find(s => s.id === storeId);
   const complaints = App.getComplaints();
 
@@ -1139,7 +1097,13 @@ Pages.dashboard = function() {
   html += '<div class="db-bar-chart">';
   ranking.slice(0,5).forEach((item, i) => {
     const h = item.avg;
-    const colors = ['#6366f1','#8b5cf6','#a855f7','#c084fc','#d8b4fe'];
+    const colors = [
+      'linear-gradient(180deg, #6366f1, #818cf8)',
+      'linear-gradient(180deg, #8b5cf6, #a78bfa)',
+      'linear-gradient(180deg, #10b981, #34d399)',
+      'linear-gradient(180deg, #f59e0b, #fbbf24)',
+      'linear-gradient(180deg, #ec4899, #f472b6)'
+    ];
     html += '<div class="db-bar-col"><div class="db-bar-val">' + item.avg + '</div><div class="db-bar" style="height:' + h + 'px;background:' + colors[i] + '"></div><div class="db-bar-label">' + item.name.slice(0,3) + '</div></div>';
   });
   html += '</div></div>';
@@ -1148,8 +1112,8 @@ Pages.dashboard = function() {
   html += '<div class="db-card-3d">';
   html += '<div class="db-card-title">处罚 vs 差评</div>';
   html += '<div class="db-vs-row">';
-  html += '<div class="db-vs-item" onclick="location.hash=\'#penalty\'" style="cursor:pointer;background:linear-gradient(135deg,#fef2f2,#fee2e2)"><div class="db-vs-num" style="color:#ef4444">' + totalPenalties + '</div><div class="db-vs-label">处罚总数 \u203A</div></div>';
-  html += '<div class="db-vs-item" onclick="location.hash=\'#complaint\'" style="cursor:pointer;background:linear-gradient(135deg,#eff6ff,#dbeafe)"><div class="db-vs-num" style="color:#3b82f6">' + totalComplaints + '</div><div class="db-vs-label">差评总数 \u203A</div></div>';
+  html += '<div class="db-vs-item" onclick="location.hash=\'#penalty\'" style="cursor:pointer;background:#fef2f2"><div class="db-vs-num" style="color:#ec4899">' + totalPenalties + '</div><div class="db-vs-label">处罚总数 \u203A</div></div>';
+  html += '<div class="db-vs-item" onclick="location.hash=\'#complaint\'" style="cursor:pointer;background:#eef2ff"><div class="db-vs-num" style="color:#6366f1">' + totalComplaints + '</div><div class="db-vs-label">差评总数 \u203A</div></div>';
   html += '</div></div>';
 
   // 整改率
@@ -1436,6 +1400,7 @@ Pages.daily = function() {
   }
 
   el.innerHTML = html;
+  App.initStoreSelect('daily-store-1', App.getStores());
 };
 
 Pages._switchDaily = function(mode) {
@@ -1446,12 +1411,7 @@ Pages._switchDaily = function(mode) {
 Pages._dailyRow = function(index) {
   var stores = App.getStores();
   var html = '<div class="daily-row" id="daily-row-' + index + '">';
-  html += '<select class="form-select daily-store" id="daily-store-' + index + '">';
-  html += '<option value="">-- 选择门店 --</option>';
-  stores.forEach(function(s) {
-    html += '<option value="' + s.name + '">' + s.name + '</option>';
-  });
-  html += '</select>';
+  html += App.renderStoreSelect('daily-store-' + index, stores, '', '搜索门店...');
   html += '<input type="number" class="form-input daily-score" id="daily-score-' + index + '" placeholder="得分" min="0" max="100">';
   html += '<input type="text" class="form-input daily-findings" id="daily-findings-' + index + '" placeholder="发现问题">';
   if (index > 1) {
@@ -1480,6 +1440,7 @@ Pages._dailyAddRow = function() {
   var div = document.createElement('div');
   div.innerHTML = html;
   container.appendChild(div.firstElementChild);
+  App.initStoreSelect('daily-store-' + nextIndex, App.getStores());
   if (rows.length + 1 >= max) {
     document.getElementById('daily-add-btn').disabled = true;
   }
@@ -1506,10 +1467,11 @@ Pages.submitDaily = function() {
   var rows = document.querySelectorAll('.daily-row');
   for (var i = 0; i < rows.length; i++) {
     var idx = i + 1;
-    var storeEl = document.getElementById('daily-store-' + idx);
+    var storeId = App.getStoreSelectValue('daily-store-' + idx);
+    var storeData = App.getStores().find(function(s) { return s.id === storeId; });
+    var store = storeData ? storeData.name : '';
     var scoreEl = document.getElementById('daily-score-' + idx);
     var findingsEl = document.getElementById('daily-findings-' + idx);
-    var store = storeEl ? storeEl.value : '';
     var score = scoreEl ? parseInt(scoreEl.value) : NaN;
     var findings = findingsEl ? findingsEl.value.trim() : '';
     if (!store) { App.toast('第' + idx + '行请选择门店'); return; }

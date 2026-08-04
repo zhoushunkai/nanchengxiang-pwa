@@ -19,14 +19,204 @@ const App = {
   seedData: {
     daily_reports: [],
     stores: [
-      { id: 'FZ001', name: '方庄店', district: '朝阳区', adminArea: '朝阳区', bizArea: '经营一区', region: '经营一区', manager: '张三', managerTitle: '门店第一负责人', mode: '2.0' },
-      { id: 'WJ001', name: '望京店', district: '朝阳区', adminArea: '朝阳区', bizArea: '经营一区', region: '经营一区', manager: '李四', managerTitle: '门店第一负责人', mode: '2.5' },
-      { id: 'SLH001', name: '十里河店', district: '朝阳区', adminArea: '朝阳区', bizArea: '经营二区', region: '经营二区', manager: '王五', managerTitle: '门店第一负责人', mode: '2.0' },
-      { id: 'SH001', name: '上海徐汇店', district: '上海', adminArea: '上海', bizArea: '上海', region: '上海', manager: '赵六', managerTitle: '门店第一负责人', mode: '3.0' },
-      { id: 'HD001', name: '海淀黄庄店', district: '海淀区', adminArea: '海淀区', bizArea: '经营三区', region: '经营三区', manager: '孙七', managerTitle: '门店第一负责人', mode: '2.0' },
-      { id: 'DC001', name: '东城王府井店', district: '东城区', adminArea: '东城区', bizArea: '经营一区', region: '经营一区', manager: '周八', managerTitle: '储备店长', mode: '2.5' },
-      { id: 'FT001', name: '丰台科技园店', district: '丰台区', adminArea: '丰台区', bizArea: '经营二区', region: '经营二区', manager: '吴九', managerTitle: '门店第一负责人', mode: '2.0' },
-      { id: 'SH002', name: '上海浦东店', district: '上海', adminArea: '上海', bizArea: '上海', region: '上海', manager: '郑十', managerTitle: '储备店长', mode: '3.0' }
+      { id: 's001', name: '控江路店', district: '上海', adminArea: '上海', bizArea: '上海', region: '上海', manager: '徐常青', managerTitle: '门店第一负责人', employeeId: '2283', mode: '3.0' },
+      { id: 's002', name: '内江路店', district: '上海', adminArea: '上海', bizArea: '上海', region: '上海', manager: '段琳阁', managerTitle: '门店第一负责人', employeeId: '15841', mode: '3.0' },
+      { id: 's003', name: '打浦路店', district: '上海', adminArea: '上海', bizArea: '上海', region: '上海', manager: '刘中骞', managerTitle: '门店第一负责人', employeeId: '2073', mode: '3.0' },
+      { id: 's004', name: '江苏路店', district: '上海', adminArea: '上海', bizArea: '上海', region: '上海', manager: '陈高峰', managerTitle: '门店第一负责人', employeeId: '12199', mode: '3.0' },
+      { id: 's005', name: '张杨路店', district: '上海', adminArea: '上海', bizArea: '上海', region: '上海', manager: '朱福林', managerTitle: '门店第一负责人', employeeId: '15014', mode: '3.0' },
+      { id: 's006', name: '曹杨路店', district: '上海', adminArea: '上海', bizArea: '上海', region: '上海', manager: '杨亚辉', managerTitle: '门店第一负责人', employeeId: '16346', mode: '3.0' },
+      { id: 's007', name: '仙霞路店', district: '上海', adminArea: '上海', bizArea: '上海', region: '上海', manager: '高丽', managerTitle: '门店第一负责人', employeeId: '20406', mode: '3.0' },
+      { id: 's008', name: '鸿兴路店', district: '上海', adminArea: '上海', bizArea: '上海', region: '上海', manager: '于洋洋', managerTitle: '门店第一负责人', employeeId: '17671', mode: '3.0' },
+      { id: 's009', name: '张江路店', district: '上海', adminArea: '上海', bizArea: '上海', region: '上海', manager: '杨秀旗', managerTitle: '门店第一负责人', employeeId: '19111', mode: '3.0' },
+      { id: 's010', name: '漕河泾店', district: '上海', adminArea: '上海', bizArea: '上海', region: '上海', manager: '张泽雨', managerTitle: '门店第一负责人', employeeId: '16946', mode: '3.0' },
+      { id: 's011', name: '同普路店', district: '上海', adminArea: '上海', bizArea: '上海', region: '上海', manager: '赵红卫', managerTitle: '门店第一负责人', employeeId: '17253', mode: '3.0' },
+      { id: 's012', name: '龙阳路店', district: '上海', adminArea: '上海', bizArea: '上海', region: '上海', manager: '姚杰', managerTitle: '门店第一负责人', employeeId: '19236', mode: '3.0' },
+      { id: 's013', name: '大连路店', district: '上海', adminArea: '上海', bizArea: '上海', region: '上海', manager: '朱涛', managerTitle: '门店第一负责人', employeeId: '18906', mode: '3.0' },
+      { id: 's014', name: '莲花路店', district: '上海', adminArea: '上海', bizArea: '上海', region: '上海', manager: '赵志远', managerTitle: '门店第一负责人', employeeId: '16477', mode: '3.0' },
+      { id: 's015', name: '制造局路店', district: '上海', adminArea: '上海', bizArea: '上海', region: '上海', manager: '王声敏', managerTitle: '门店第一负责人', employeeId: '3013', mode: '3.0' },
+      { id: 's016', name: '都市路店', district: '上海', adminArea: '上海', bizArea: '上海', region: '上海', manager: '鲁远亮', managerTitle: '门店第一负责人', employeeId: '8983', mode: '3.0' },
+      { id: 's017', name: '沪南路店', district: '上海', adminArea: '上海', bizArea: '上海', region: '上海', manager: '陈林', managerTitle: '门店第一负责人', employeeId: '18579', mode: '3.0' },
+      { id: 's018', name: '碧波路店', district: '上海', adminArea: '上海', bizArea: '上海', region: '上海', manager: '耿玉杰', managerTitle: '门店第一负责人', employeeId: '9223', mode: '3.0' },
+      { id: 's019', name: '漕宝路店', district: '上海', adminArea: '上海', bizArea: '上海', region: '上海', manager: '王永振', managerTitle: '门店第一负责人', employeeId: '17566', mode: '3.0' },
+      { id: 's020', name: '祁连山路店', district: '上海', adminArea: '上海', bizArea: '上海', region: '上海', manager: '凡小伟', managerTitle: '门店第一负责人', employeeId: '19209', mode: '3.0' },
+      { id: 's021', name: '政通路店', district: '上海', adminArea: '上海', bizArea: '上海', region: '上海', manager: '王天宇', managerTitle: '门店第一负责人', employeeId: '17050', mode: '3.0' },
+      { id: 's022', name: '宁夏路店', district: '上海', adminArea: '上海', bizArea: '上海', region: '上海', manager: '刘瑞腾', managerTitle: '门店第一负责人', employeeId: '19656', mode: '3.0' },
+      { id: 's023', name: '大融城店', district: '上海', adminArea: '上海', bizArea: '上海', region: '上海', manager: '臧文娜', managerTitle: '门店第一负责人', employeeId: '17743', mode: '3.0' },
+      { id: 's024', name: '南翔店', district: '上海', adminArea: '上海', bizArea: '上海', region: '上海', manager: '聂伟龙', managerTitle: '门店第一负责人', employeeId: '15964', mode: '3.0' },
+      { id: 's025', name: '天通苑店', district: '昌平区', adminArea: '昌平区', bizArea: '训练店', region: '训练店', manager: '马瑞霞', managerTitle: '门店第一负责人', employeeId: '8856', mode: '3.0' },
+      { id: 's026', name: '立水桥店', district: '朝阳区', adminArea: '朝阳区', bizArea: '训练店', region: '训练店', manager: '马心丽', managerTitle: '储备店长', employeeId: '13728', mode: '3.0' },
+      { id: 's027', name: '物资学院店', district: '通州区', adminArea: '通州区', bizArea: '训练店', region: '训练店', manager: '何子元', managerTitle: '储备店长', employeeId: '10864', mode: '3.0' },
+      { id: 's028', name: '常营店', district: '朝阳区', adminArea: '朝阳区', bizArea: '训练店', region: '训练店', manager: '杨二光', managerTitle: '门店第一负责人', employeeId: '15467', mode: '3.0' },
+      { id: 's029', name: '枣园店', district: '大兴区', adminArea: '大兴区', bizArea: '训练店', region: '训练店', manager: '曹露露', managerTitle: '门店第一负责人', employeeId: '13707', mode: '3.0' },
+      { id: 's030', name: '张仪村店', district: '丰台区', adminArea: '丰台区', bizArea: '训练店', region: '训练店', manager: '赵宁', managerTitle: '门店第一负责人', employeeId: '5031', mode: '3.0' },
+      { id: 's031', name: '清河店', district: '海淀区', adminArea: '海淀区', bizArea: '训练店', region: '训练店', manager: '邓继鲁', managerTitle: '门店第一负责人', employeeId: '13580', mode: '3.0' },
+      { id: 's032', name: '阎村店', district: '房山区', adminArea: '房山区', bizArea: '训练店', region: '训练店', manager: '王克霞', managerTitle: '门店第一负责人', employeeId: '18607', mode: '3.0' },
+      { id: 's033', name: '永安路店', district: '西城区', adminArea: '西城区', bizArea: '训练店', region: '训练店', manager: '石清曼', managerTitle: '门店第一负责人', employeeId: '16786', mode: '3.0' },
+      { id: 's034', name: '门头沟店', district: '门头沟区', adminArea: '门头沟区', bizArea: '训练店', region: '训练店', manager: '周松涛', managerTitle: '门店第一负责人', employeeId: '16316', mode: '3.0' },
+      { id: 's035', name: '和平东街店', district: '朝阳区', adminArea: '朝阳区', bizArea: '经营一区', region: '经营一区', manager: '滕桂桃', managerTitle: '门店第一负责人', employeeId: '18509', mode: '2.5' },
+      { id: 's036', name: '首经贸店', district: '丰台区', adminArea: '丰台区', bizArea: '经营一区', region: '经营一区', manager: '曾冬梅', managerTitle: '门店第一负责人', employeeId: '1236', mode: '2.5' },
+      { id: 's037', name: '和平西桥店', district: '朝阳区', adminArea: '朝阳区', bizArea: '经营一区', region: '经营一区', manager: '宋凤堂', managerTitle: '门店第一负责人', employeeId: '11689', mode: '2.5' },
+      { id: 's038', name: '通州北苑店', district: '通州区', adminArea: '通州区', bizArea: '经营一区', region: '经营一区', manager: '董聪慧', managerTitle: '门店第一负责人', employeeId: '17509', mode: '2.5' },
+      { id: 's039', name: '环影十二街店', district: '通州区', adminArea: '通州区', bizArea: '经营一区', region: '经营一区', manager: '陈荣', managerTitle: '门店第一负责人', employeeId: '6579', mode: '2.0' },
+      { id: 's040', name: '东花市店', district: '东城区', adminArea: '东城区', bizArea: '经营一区', region: '经营一区', manager: '徐建', managerTitle: '门店第一负责人', employeeId: '10668', mode: '2.0' },
+      { id: 's041', name: '富力城店', district: '朝阳区', adminArea: '朝阳区', bizArea: '经营一区', region: '经营一区', manager: '李景畅', managerTitle: '储备店长', employeeId: '14015', mode: '2.0' },
+      { id: 's042', name: '龙德广场店', district: '昌平区', adminArea: '昌平区', bizArea: '经营一区', region: '经营一区', manager: '冯学利', managerTitle: '门店第一负责人', employeeId: '11889', mode: '2.0' },
+      { id: 's043', name: '国贸店', district: '朝阳区', adminArea: '朝阳区', bizArea: '经营一区', region: '经营一区', manager: '聂文波', managerTitle: '门店第一负责人', employeeId: '6295', mode: '2.0' },
+      { id: 's044', name: '新中关店', district: '海淀区', adminArea: '海淀区', bizArea: '经营一区', region: '经营一区', manager: '申俊萍', managerTitle: '门店第一负责人', employeeId: '10415', mode: '2.0' },
+      { id: 's045', name: '霍营店', district: '昌平区', adminArea: '昌平区', bizArea: '经营一区', region: '经营一区', manager: '王冬梅', managerTitle: '门店第一负责人', employeeId: '2550', mode: '2.0' },
+      { id: 's046', name: '开阳里店', district: '丰台区', adminArea: '丰台区', bizArea: '经营一区', region: '经营一区', manager: '闫晶晶', managerTitle: '门店第一负责人', employeeId: '2863', mode: '2.0' },
+      { id: 's047', name: '大成路店', district: '丰台区', adminArea: '丰台区', bizArea: '经营一区', region: '经营一区', manager: '张会敏', managerTitle: '门店第一负责人', employeeId: '13935', mode: '2.0' },
+      { id: 's048', name: '大红门店', district: '丰台区', adminArea: '丰台区', bizArea: '经营一区', region: '经营一区', manager: '张晴晴', managerTitle: '门店第一负责人', employeeId: '2245', mode: '2.0' },
+      { id: 's049', name: '紫竹桥店', district: '海淀区', adminArea: '海淀区', bizArea: '经营一区', region: '经营一区', manager: '杨忠华', managerTitle: '储备店长', employeeId: '17820', mode: '2.0' },
+      { id: 's050', name: '新宫店', district: '丰台区', adminArea: '丰台区', bizArea: '经营一区', region: '经营一区', manager: '李超', managerTitle: '门店第一负责人', employeeId: '11379', mode: '2.0' },
+      { id: 's051', name: '五道口店', district: '海淀区', adminArea: '海淀区', bizArea: '经营一区', region: '经营一区', manager: '崔盼成', managerTitle: '门店第一负责人', employeeId: '11738', mode: '2.0' },
+      { id: 's052', name: '通胡大街店', district: '通州区', adminArea: '通州区', bizArea: '经营一区', region: '经营一区', manager: '赵炳旭', managerTitle: '门店第一负责人', employeeId: '8028', mode: '2.0' },
+      { id: 's053', name: '潘家园店', district: '朝阳区', adminArea: '朝阳区', bizArea: '经营一区', region: '经营一区', manager: '张玉莲', managerTitle: '门店第一负责人', employeeId: '14519', mode: '2.0' },
+      { id: 's054', name: '黄渠店', district: '朝阳区', adminArea: '朝阳区', bizArea: '经营二区', region: '经营二区', manager: '杜安山', managerTitle: '门店第一负责人', employeeId: '10081', mode: '2.0' },
+      { id: 's055', name: '垡头店', district: '朝阳区', adminArea: '朝阳区', bizArea: '经营二区', region: '经营二区', manager: '张焱珂', managerTitle: '门店第一负责人', employeeId: '15236', mode: '2.0' },
+      { id: 's056', name: '旧宫店', district: '大兴区', adminArea: '大兴区', bizArea: '经营二区', region: '经营二区', manager: '卢二宁', managerTitle: '门店第一负责人', employeeId: '16478', mode: '2.0' },
+      { id: 's057', name: '吕家营店', district: '朝阳区', adminArea: '朝阳区', bizArea: '经营二区', region: '经营二区', manager: '蒋明艳', managerTitle: '门店第一负责人', employeeId: '3171', mode: '2.0' },
+      { id: 's058', name: '刘家窑店', district: '丰台区', adminArea: '丰台区', bizArea: '经营二区', region: '经营二区', manager: '韩荣荣', managerTitle: '门店第一负责人', employeeId: '8161', mode: '2.0' },
+      { id: 's059', name: '木樨园店', district: '丰台区', adminArea: '丰台区', bizArea: '经营二区', region: '经营二区', manager: '姚梦钰', managerTitle: '门店第一负责人', employeeId: '16095', mode: '2.0' },
+      { id: 's060', name: '酒仙桥店', district: '朝阳区', adminArea: '朝阳区', bizArea: '经营二区', region: '经营二区', manager: '李明月', managerTitle: '门店第一负责人', employeeId: '3028', mode: '2.0' },
+      { id: 's061', name: '角门店', district: '丰台区', adminArea: '丰台区', bizArea: '经营二区', region: '经营二区', manager: '李兴翠', managerTitle: '门店第一负责人', employeeId: '10325', mode: '2.0' },
+      { id: 's062', name: '成寿寺店', district: '丰台区', adminArea: '丰台区', bizArea: '经营二区', region: '经营二区', manager: '牛旺', managerTitle: '门店第一负责人', employeeId: '13579', mode: '2.0' },
+      { id: 's063', name: '劲松店', district: '朝阳区', adminArea: '朝阳区', bizArea: '经营二区', region: '经营二区', manager: '于秀红', managerTitle: '门店第一负责人', employeeId: '5539', mode: '2.0' },
+      { id: 's064', name: '双井店', district: '朝阳区', adminArea: '朝阳区', bizArea: '经营二区', region: '经营二区', manager: '李婉婷', managerTitle: '门店第一负责人', employeeId: '17026', mode: '2.0' },
+      { id: 's065', name: '洋桥店', district: '丰台区', adminArea: '丰台区', bizArea: '经营二区', region: '经营二区', manager: '李满龙', managerTitle: '门店第一负责人', employeeId: '17018', mode: '2.0' },
+      { id: 's066', name: '公益西桥店', district: '丰台区', adminArea: '丰台区', bizArea: '经营二区', region: '经营二区', manager: '吴泽', managerTitle: '门店第一负责人', employeeId: '19237', mode: '2.0' },
+      { id: 's067', name: '西局店', district: '丰台区', adminArea: '丰台区', bizArea: '经营二区', region: '经营二区', manager: '徐瑞峰', managerTitle: '储备店长', employeeId: '10478', mode: '2.0' },
+      { id: 's068', name: '甘露园店', district: '朝阳区', adminArea: '朝阳区', bizArea: '经营二区', region: '经营二区', manager: '周周', managerTitle: '门店第一负责人', employeeId: '15509', mode: '2.0' },
+      { id: 's069', name: '宋家庄店', district: '丰台区', adminArea: '丰台区', bizArea: '经营二区', region: '经营二区', manager: '李景叶', managerTitle: '门店第一负责人', employeeId: '4668', mode: '2.0' },
+      { id: 's070', name: '西红门店', district: '大兴区', adminArea: '大兴区', bizArea: '经营二区', region: '经营二区', manager: '齐家乐', managerTitle: '门店第一负责人', employeeId: '12147', mode: '2.0' },
+      { id: 's071', name: '苹果园店', district: '石景山区', adminArea: '石景山区', bizArea: '经营二区', region: '经营二区', manager: '王清清', managerTitle: '门店第一负责人', employeeId: '4282', mode: '2.0' },
+      { id: 's072', name: '六里桥东店', district: '丰台区', adminArea: '丰台区', bizArea: '经营二区', region: '经营二区', manager: '张丹萍', managerTitle: '门店第一负责人', employeeId: '16892', mode: '2.0' },
+      { id: 's073', name: '安贞店', district: '朝阳区', adminArea: '朝阳区', bizArea: '经营三区', region: '经营三区', manager: '刘竞阳', managerTitle: '门店第一负责人', employeeId: '19232', mode: '2.0' },
+      { id: 's074', name: '北太平庄店', district: '海淀区', adminArea: '海淀区', bizArea: '经营三区', region: '经营三区', manager: '王宏武', managerTitle: '门店第一负责人', employeeId: '12521', mode: '2.0' },
+      { id: 's075', name: '小西天店', district: '海淀区', adminArea: '海淀区', bizArea: '经营三区', region: '经营三区', manager: '魏倩倩', managerTitle: '门店第一负责人', employeeId: '9820', mode: '2.0' },
+      { id: 's076', name: '志新路店', district: '海淀区', adminArea: '海淀区', bizArea: '经营三区', region: '经营三区', manager: '秦双双', managerTitle: '门店第一负责人', employeeId: '16490', mode: '2.0' },
+      { id: 's077', name: '奥体店', district: '朝阳区', adminArea: '朝阳区', bizArea: '经营三区', region: '经营三区', manager: '胡晓飞', managerTitle: '门店第一负责人', employeeId: '5625', mode: '2.0' },
+      { id: 's078', name: '立水桥二店', district: '朝阳区', adminArea: '朝阳区', bizArea: '经营三区', region: '经营三区', manager: '孟紫藤', managerTitle: '门店第一负责人', employeeId: '7710', mode: '2.0' },
+      { id: 's079', name: '马甸桥店', district: '西城区', adminArea: '西城区', bizArea: '经营三区', region: '经营三区', manager: '范瑞焕', managerTitle: '门店第一负责人', employeeId: '19207', mode: '2.0' },
+      { id: 's080', name: '牡丹园店', district: '海淀区', adminArea: '海淀区', bizArea: '经营三区', region: '经营三区', manager: '张明君', managerTitle: '门店第一负责人', employeeId: '15430', mode: '2.0' },
+      { id: 's081', name: '六道口店', district: '海淀区', adminArea: '海淀区', bizArea: '经营三区', region: '经营三区', manager: '高秋瑾', managerTitle: '二副', employeeId: '12256', mode: '2.0' },
+      { id: 's082', name: '金码大厦店', district: '海淀区', adminArea: '海淀区', bizArea: '经营三区', region: '经营三区', manager: '付兵（代）', managerTitle: '储备店长', employeeId: '17334', mode: '2.0' },
+      { id: 's083', name: '马连道店', district: '西城区', adminArea: '西城区', bizArea: '经营三区', region: '经营三区', manager: '冉伟', managerTitle: '门店第一负责人', employeeId: '4075', mode: '2.0' },
+      { id: 's084', name: '刘家窑二店', district: '丰台区', adminArea: '丰台区', bizArea: '经营三区', region: '经营三区', manager: '王丹丹', managerTitle: '门店第一负责人', employeeId: '11985', mode: '2.0' },
+      { id: 's085', name: '传媒大学店', district: '朝阳区', adminArea: '朝阳区', bizArea: '经营三区', region: '经营三区', manager: '仵蜜蜜', managerTitle: '门店第一负责人', employeeId: '15418', mode: '2.0' },
+      { id: 's086', name: '左家庄店', district: '朝阳区', adminArea: '朝阳区', bizArea: '经营三区', region: '经营三区', manager: '吴艳磊', managerTitle: '门店第一负责人', employeeId: '12674', mode: '2.0' },
+      { id: 's087', name: '丰台南路店', district: '丰台区', adminArea: '丰台区', bizArea: '经营三区', region: '经营三区', manager: '朱乃云', managerTitle: '门店第一负责人', employeeId: '4175', mode: '2.0' },
+      { id: 's088', name: '朝阳大悦城店', district: '朝阳区', adminArea: '朝阳区', bizArea: '经营三区', region: '经营三区', manager: '周宗楠', managerTitle: '门店第一负责人', employeeId: '16722', mode: '2.0' },
+      { id: 's089', name: '甘露园二店', district: '朝阳区', adminArea: '朝阳区', bizArea: '经营三区', region: '经营三区', manager: '崔梦宇', managerTitle: '门店第一负责人', employeeId: '15042', mode: '2.0' },
+      { id: 's090', name: '中日友好医院店', district: '朝阳区', adminArea: '朝阳区', bizArea: '经营三区', region: '经营三区', manager: '张春燕', managerTitle: '门店第一负责人', employeeId: '1407', mode: '2.0' },
+      { id: 's091', name: '北京西站店', district: '丰台区', adminArea: '丰台区', bizArea: '经营四区', region: '经营四区', manager: '田财云', managerTitle: '门店第一负责人', employeeId: '6705', mode: '2.5' },
+      { id: 's092', name: '马驹桥店', district: '通州区', adminArea: '通州区', bizArea: '经营四区', region: '经营四区', manager: '刘永豪', managerTitle: '门店第一负责人', employeeId: '15726', mode: '2.5' },
+      { id: 's093', name: '现代城店', district: '通州区', adminArea: '通州区', bizArea: '经营四区', region: '经营四区', manager: '赵涵', managerTitle: '门店第一负责人', employeeId: '18992', mode: '2.5' },
+      { id: 's094', name: '康化路店', district: '朝阳区', adminArea: '朝阳区', bizArea: '经营四区', region: '经营四区', manager: '陈振南', managerTitle: '门店第一负责人', employeeId: '14768', mode: '2.5' },
+      { id: 's095', name: '巴沟店', district: '海淀区', adminArea: '海淀区', bizArea: '经营四区', region: '经营四区', manager: '冯晚霞', managerTitle: '门店第一负责人', employeeId: '19283', mode: '2.5' },
+      { id: 's096', name: '朝阳门南小街店', district: '东城区', adminArea: '东城区', bizArea: '经营四区', region: '经营四区', manager: '田雅霜', managerTitle: '门店第一负责人', employeeId: '18006', mode: '2.0' },
+      { id: 's097', name: '十里河店', district: '朝阳区', adminArea: '朝阳区', bizArea: '经营四区', region: '经营四区', manager: '武媛媛', managerTitle: '门店第一负责人', employeeId: '11890', mode: '2.0' },
+      { id: 's098', name: '看丹桥店', district: '丰台区', adminArea: '丰台区', bizArea: '经营四区', region: '经营四区', manager: '吴晗', managerTitle: '门店第一负责人', employeeId: '14485', mode: '2.0' },
+      { id: 's099', name: '翠微路店', district: '海淀区', adminArea: '海淀区', bizArea: '经营四区', region: '经营四区', manager: '邱永浩', managerTitle: '门店第一负责人', employeeId: '7163', mode: '2.0' },
+      { id: 's100', name: '草桥店', district: '丰台区', adminArea: '丰台区', bizArea: '经营四区', region: '经营四区', manager: '邓颖', managerTitle: '门店第一负责人', employeeId: '18157', mode: '2.0' },
+      { id: 's101', name: '玉泉路店', district: '海淀区', adminArea: '海淀区', bizArea: '经营四区', region: '经营四区', manager: '郑胜起', managerTitle: '门店第一负责人', employeeId: '10062', mode: '2.0' },
+      { id: 's102', name: '西罗园店', district: '丰台区', adminArea: '丰台区', bizArea: '经营四区', region: '经营四区', manager: '杨舒婷', managerTitle: '门店第一负责人', employeeId: '19072', mode: '2.0' },
+      { id: 's103', name: '阜成门店', district: '西城区', adminArea: '西城区', bizArea: '经营四区', region: '经营四区', manager: '刘志修', managerTitle: '门店第一负责人', employeeId: '11803', mode: '2.0' },
+      { id: 's104', name: '分钟寺店', district: '朝阳区', adminArea: '朝阳区', bizArea: '经营四区', region: '经营四区', manager: '江双', managerTitle: '门店第一负责人', employeeId: '12085', mode: '2.0' },
+      { id: 's105', name: '定安路店', district: '东城区', adminArea: '东城区', bizArea: '经营四区', region: '经营四区', manager: '袁晓红', managerTitle: '门店第一负责人', employeeId: '8042', mode: '2.0' },
+      { id: 's106', name: '石榴庄店', district: '丰台区', adminArea: '丰台区', bizArea: '经营四区', region: '经营四区', manager: '刘澳利', managerTitle: '门店第一负责人', employeeId: '18858', mode: '2.0' },
+      { id: 's107', name: '公主坟店', district: '海淀区', adminArea: '海淀区', bizArea: '经营四区', region: '经营四区', manager: '郭艳美', managerTitle: '门店第一负责人', employeeId: '2110', mode: '2.0' },
+      { id: 's108', name: '柳芳店', district: '朝阳区', adminArea: '朝阳区', bizArea: '经营四区', region: '经营四区', manager: '王佳雪', managerTitle: '门店第一负责人', employeeId: '6795', mode: '2.0' },
+      { id: 's109', name: '永安里店', district: '朝阳区', adminArea: '朝阳区', bizArea: '经营五区', region: '经营五区', manager: '熊胜红', managerTitle: '门店第一负责人', employeeId: '11373', mode: '2.0' },
+      { id: 's110', name: '科丰桥店', district: '丰台区', adminArea: '丰台区', bizArea: '经营五区', region: '经营五区', manager: '李宏亮', managerTitle: '门店第一负责人', employeeId: '5901', mode: '2.0' },
+      { id: 's111', name: '万丰路店', district: '丰台区', adminArea: '丰台区', bizArea: '经营五区', region: '经营五区', manager: '周小龙', managerTitle: '门店第一负责人', employeeId: '15464', mode: '2.0' },
+      { id: 's112', name: '将台路店', district: '朝阳区', adminArea: '朝阳区', bizArea: '经营五区', region: '经营五区', manager: '石佳佳', managerTitle: '门店第一负责人', employeeId: '14985', mode: '2.0' },
+      { id: 's113', name: '四惠东店', district: '朝阳区', adminArea: '朝阳区', bizArea: '经营五区', region: '经营五区', manager: '李欢', managerTitle: '门店第一负责人', employeeId: '18457', mode: '2.0' },
+      { id: 's114', name: '东直门店', district: '东城区', adminArea: '东城区', bizArea: '经营五区', region: '经营五区', manager: '武春艳', managerTitle: '门店第一负责人', employeeId: '19198', mode: '2.0' },
+      { id: 's115', name: '十里河三店', district: '朝阳区', adminArea: '朝阳区', bizArea: '经营五区', region: '经营五区', manager: '李敏', managerTitle: '门店第一负责人', employeeId: '9971', mode: '2.0' },
+      { id: 's116', name: '北京南站店', district: '丰台区', adminArea: '丰台区', bizArea: '经营五区', region: '经营五区', manager: '赵倩', managerTitle: '门店第一负责人', employeeId: '6680', mode: '2.0' },
+      { id: 's117', name: '四道口店', district: '海淀区', adminArea: '海淀区', bizArea: '经营五区', region: '经营五区', manager: '吴迪', managerTitle: '门店第一负责人', employeeId: '4928', mode: '2.0' },
+      { id: 's118', name: '天通苑三店', district: '昌平区', adminArea: '昌平区', bizArea: '经营五区', region: '经营五区', manager: '孙振', managerTitle: '门店第一负责人', employeeId: '3190', mode: '2.0' },
+      { id: 's119', name: '隆福寺店', district: '东城区', adminArea: '东城区', bizArea: '经营五区', region: '经营五区', manager: '容晓晴', managerTitle: '门店第一负责人', employeeId: '14769', mode: '2.0' },
+      { id: 's120', name: '花家地店', district: '朝阳区', adminArea: '朝阳区', bizArea: '经营五区', region: '经营五区', manager: '闫会平', managerTitle: '门店第一负责人', employeeId: '12087', mode: '2.0' },
+      { id: 's121', name: '岳各庄店', district: '丰台区', adminArea: '丰台区', bizArea: '经营五区', region: '经营五区', manager: '周春兰', managerTitle: '门店第一负责人', employeeId: '19492', mode: '2.0' },
+      { id: 's122', name: '西三旗店', district: '海淀区', adminArea: '海淀区', bizArea: '经营五区', region: '经营五区', manager: '郝方方', managerTitle: '门店第一负责人', employeeId: '9278', mode: '2.0' },
+      { id: 's123', name: '西坝河店', district: '朝阳区', adminArea: '朝阳区', bizArea: '经营五区', region: '经营五区', manager: '李晓花', managerTitle: '储备店长', employeeId: '15546', mode: '2.0' },
+      { id: 's124', name: '九棵树店', district: '通州区', adminArea: '通州区', bizArea: '经营五区', region: '经营五区', manager: '杨育彪', managerTitle: '门店第一负责人', employeeId: '13206', mode: '2.0' },
+      { id: 's125', name: '九龙山店', district: '朝阳区', adminArea: '朝阳区', bizArea: '经营五区', region: '经营五区', manager: '高月生', managerTitle: '门店第一负责人', employeeId: '10609', mode: '2.0' },
+      { id: 's126', name: '亚运村店', district: '朝阳区', adminArea: '朝阳区', bizArea: '经营五区', region: '经营五区', manager: '孔维哲', managerTitle: '门店第一负责人', employeeId: '17682', mode: '2.0' },
+      { id: 's127', name: '望京二店', district: '朝阳区', adminArea: '朝阳区', bizArea: '经营五区', region: '经营五区', manager: '周文杰', managerTitle: '门店第一负责人', employeeId: '11165', mode: '2.0' },
+      { id: 's128', name: '大望路店', district: '朝阳区', adminArea: '朝阳区', bizArea: '经营六区', region: '经营六区', manager: '刘彦乔', managerTitle: '门店第一负责人', employeeId: '5705', mode: '2.0' },
+      { id: 's129', name: '月坛店', district: '西城区', adminArea: '西城区', bizArea: '经营六区', region: '经营六区', manager: '彭冬冬', managerTitle: '门店第一负责人', employeeId: '1825', mode: '2.0' },
+      { id: 's130', name: '菜市口店', district: '西城区', adminArea: '西城区', bizArea: '经营六区', region: '经营六区', manager: '李郑杰', managerTitle: '门店第一负责人', employeeId: '13223', mode: '2.0' },
+      { id: 's131', name: '大郊亭店', district: '朝阳区', adminArea: '朝阳区', bizArea: '经营六区', region: '经营六区', manager: '赵京阳', managerTitle: '门店第一负责人', employeeId: '2662', mode: '2.0' },
+      { id: 's132', name: '回龙观店', district: '昌平区', adminArea: '昌平区', bizArea: '经营六区', region: '经营六区', manager: '何祖奇', managerTitle: '门店第一负责人', employeeId: '7461', mode: '2.0' },
+      { id: 's133', name: '育新店', district: '昌平区', adminArea: '昌平区', bizArea: '经营六区', region: '经营六区', manager: '王宇', managerTitle: '门店第一负责人', employeeId: '7479', mode: '2.0' },
+      { id: 's134', name: '磁器口店', district: '东城区', adminArea: '东城区', bizArea: '经营六区', region: '经营六区', manager: '王玉辉', managerTitle: '门店第一负责人', employeeId: '2523', mode: '2.0' },
+      { id: 's135', name: '马家堡店', district: '丰台区', adminArea: '丰台区', bizArea: '经营六区', region: '经营六区', manager: '姚守明', managerTitle: '门店第一负责人', employeeId: '19096', mode: '2.0' },
+      { id: 's136', name: '六里桥店', district: '丰台区', adminArea: '丰台区', bizArea: '经营六区', region: '经营六区', manager: '郭明月', managerTitle: '门店第一负责人', employeeId: '8490', mode: '2.0' },
+      { id: 's137', name: '建国门店', district: '朝阳区', adminArea: '朝阳区', bizArea: '经营六区', region: '经营六区', manager: '徐萌萌', managerTitle: '门店第一负责人', employeeId: '16776', mode: '2.0' },
+      { id: 's138', name: '白云路店', district: '西城区', adminArea: '西城区', bizArea: '经营六区', region: '经营六区', manager: '陈志文', managerTitle: '门店第一负责人', employeeId: '6102', mode: '2.0' },
+      { id: 's139', name: '人民大学店', district: '海淀区', adminArea: '海淀区', bizArea: '经营六区', region: '经营六区', manager: '马冰雪', managerTitle: '门店第一负责人', employeeId: '19142', mode: '2.0' },
+      { id: 's140', name: '天健广场店', district: '丰台区', adminArea: '丰台区', bizArea: '经营六区', region: '经营六区', manager: '丁志', managerTitle: '门店第一负责人', employeeId: '19463', mode: '2.0' },
+      { id: 's141', name: '管庄店', district: '朝阳区', adminArea: '朝阳区', bizArea: '经营六区', region: '经营六区', manager: '高翔', managerTitle: '门店第一负责人', employeeId: '7398', mode: '2.0' },
+      { id: 's142', name: '珠江帝景店', district: '朝阳区', adminArea: '朝阳区', bizArea: '经营六区', region: '经营六区', manager: '刘丹', managerTitle: '门店第一负责人', employeeId: '7393', mode: '2.0' },
+      { id: 's143', name: '青年路店', district: '朝阳区', adminArea: '朝阳区', bizArea: '经营六区', region: '经营六区', manager: '洪勤', managerTitle: '门店第一负责人', employeeId: '6480', mode: '2.0' },
+      { id: 's144', name: '黄村西大街店', district: '大兴区', adminArea: '大兴区', bizArea: '经营六区', region: '经营六区', manager: '于红丽', managerTitle: '门店第一负责人', employeeId: '5156', mode: '2.0' },
+      { id: 's145', name: '北苑路店', district: '朝阳区', adminArea: '朝阳区', bizArea: '经营六区', region: '经营六区', manager: '张立香', managerTitle: '门店第一负责人', employeeId: '16163', mode: '2.0' },
+      { id: 's146', name: '北新桥店', district: '东城区', adminArea: '东城区', bizArea: '经营六区', region: '经营六区', manager: '安帅锦', managerTitle: '门店第一负责人', employeeId: '11427', mode: '2.0' },
+      { id: 's147', name: '回龙观二店', district: '昌平区', adminArea: '昌平区', bizArea: '经营七区', region: '经营七区', manager: '王晋一', managerTitle: '门店第一负责人', employeeId: '5474', mode: '2.5' },
+      { id: 's148', name: '角门西店', district: '丰台区', adminArea: '丰台区', bizArea: '经营七区', region: '经营七区', manager: '牛菲', managerTitle: '门店第一负责人', employeeId: '10300', mode: '2.5' },
+      { id: 's149', name: '魏公村店', district: '海淀区', adminArea: '海淀区', bizArea: '经营七区', region: '经营七区', manager: '高晓博', managerTitle: '门店第一负责人', employeeId: '10769', mode: '2.5' },
+      { id: 's150', name: '旧宫二店', district: '大兴区', adminArea: '大兴区', bizArea: '经营七区', region: '经营七区', manager: '倪梦贤', managerTitle: '门店第一负责人', employeeId: '16224', mode: '2.5' },
+      { id: 's151', name: '马连洼店', district: '海淀区', adminArea: '海淀区', bizArea: '经营七区', region: '经营七区', manager: '刘杰', managerTitle: '门店第一负责人', employeeId: '1865', mode: '2.5' },
+      { id: 's152', name: '动物园店', district: '西城区', adminArea: '西城区', bizArea: '经营七区', region: '经营七区', manager: '李智', managerTitle: '门店第一负责人', employeeId: '19537', mode: '2.0' },
+      { id: 's153', name: '大悦春风里店', district: '大兴区', adminArea: '大兴区', bizArea: '经营七区', region: '经营七区', manager: '孙红雨', managerTitle: '门店第一负责人', employeeId: '14744', mode: '2.0' },
+      { id: 's154', name: '磁器口二店', district: '东城区', adminArea: '东城区', bizArea: '经营七区', region: '经营七区', manager: '张亭', managerTitle: '门店第一负责人', employeeId: '16103', mode: '2.0' },
+      { id: 's155', name: '劲松二店', district: '朝阳区', adminArea: '朝阳区', bizArea: '经营七区', region: '经营七区', manager: '王秀秀', managerTitle: '门店第一负责人', employeeId: '3676', mode: '2.0' },
+      { id: 's156', name: '前门店', district: '东城区', adminArea: '东城区', bizArea: '经营七区', region: '经营七区', manager: '胡鹏云', managerTitle: '门店第一负责人', employeeId: '16094', mode: '2.0' },
+      { id: 's157', name: '通州万达店', district: '通州区', adminArea: '通州区', bizArea: '经营七区', region: '经营七区', manager: '张涛', managerTitle: '门店第一负责人', employeeId: '14430', mode: '2.0' },
+      { id: 's158', name: '望京三店', district: '朝阳区', adminArea: '朝阳区', bizArea: '经营七区', region: '经营七区', manager: '张顺亮', managerTitle: '门店第一负责人', employeeId: '8022', mode: '2.0' },
+      { id: 's159', name: '国贸二店', district: '朝阳区', adminArea: '朝阳区', bizArea: '经营七区', region: '经营七区', manager: '李胜欣', managerTitle: '门店第一负责人', employeeId: '11658', mode: '2.0' },
+      { id: 's160', name: '右安门店', district: '丰台区', adminArea: '丰台区', bizArea: '经营七区', region: '经营七区', manager: '谢明丽', managerTitle: '门店第一负责人', employeeId: '14482', mode: '2.0' },
+      { id: 's161', name: '灯市口店', district: '东城区', adminArea: '东城区', bizArea: '经营七区', region: '经营七区', manager: '薛九骞', managerTitle: '门店第一负责人', employeeId: '14108', mode: '2.0' },
+      { id: 's162', name: '保福寺店', district: '海淀区', adminArea: '海淀区', bizArea: '经营七区', region: '经营七区', manager: '王慧', managerTitle: '门店第一负责人', employeeId: '5472', mode: '2.0' },
+      { id: 's163', name: '常营二店', district: '朝阳区', adminArea: '朝阳区', bizArea: '经营七区', region: '经营七区', manager: '张阳莉', managerTitle: '门店第一负责人', employeeId: '9197', mode: '2.0' },
+      { id: 's164', name: '丰台东大街店', district: '丰台区', adminArea: '丰台区', bizArea: '经营八区', region: '经营八区', manager: '高宁', managerTitle: '门店第一负责人', employeeId: '19616', mode: '2.0' },
+      { id: 's165', name: '定福庄二店', district: '朝阳区', adminArea: '朝阳区', bizArea: '经营八区', region: '经营八区', manager: '甘宇环', managerTitle: '门店第一负责人', employeeId: '4346', mode: '2.0' },
+      { id: 's166', name: '蒲黄榆店', district: '丰台区', adminArea: '丰台区', bizArea: '经营八区', region: '经营八区', manager: '郑光纪', managerTitle: '门店第一负责人', employeeId: '16986', mode: '2.0' },
+      { id: 's167', name: '小屯路店', district: '丰台区', adminArea: '丰台区', bizArea: '经营八区', region: '经营八区', manager: '赵昌芹', managerTitle: '门店第一负责人', employeeId: '10703', mode: '2.0' },
+      { id: 's168', name: '丰管路店', district: '丰台区', adminArea: '丰台区', bizArea: '经营八区', region: '经营八区', manager: '赵兴猛', managerTitle: '门店第一负责人', employeeId: '11200', mode: '2.0' },
+      { id: 's169', name: '未来科技城店', district: '昌平区', adminArea: '昌平区', bizArea: '经营八区', region: '经营八区', manager: '韩相杰', managerTitle: '门店第一负责人', employeeId: '11000', mode: '2.0' },
+      { id: 's170', name: '高米店北店', district: '大兴区', adminArea: '大兴区', bizArea: '经营八区', region: '经营八区', manager: '沈小君', managerTitle: '门店第一负责人', employeeId: '8708', mode: '2.0' },
+      { id: 's171', name: '宣武门店', district: '西城区', adminArea: '西城区', bizArea: '经营八区', region: '经营八区', manager: '肖星', managerTitle: '门店第一负责人', employeeId: '11983', mode: '2.0' },
+      { id: 's172', name: '生物医药基地店', district: '大兴区', adminArea: '大兴区', bizArea: '经营八区', region: '经营八区', manager: '刘超', managerTitle: '门店第一负责人', employeeId: '6212', mode: '2.0' },
+      { id: 's173', name: '万源路店', district: '大兴区', adminArea: '大兴区', bizArea: '经营八区', region: '经营八区', manager: '张川', managerTitle: '门店第一负责人', employeeId: '9768', mode: '2.0' },
+      { id: 's174', name: '双桥店', district: '朝阳区', adminArea: '朝阳区', bizArea: '经营八区', region: '经营八区', manager: '相小奇', managerTitle: '门店第一负责人', employeeId: '12337', mode: '2.0' },
+      { id: 's175', name: '天宫院店', district: '大兴区', adminArea: '大兴区', bizArea: '经营八区', region: '经营八区', manager: '李晴', managerTitle: '门店第一负责人', employeeId: '14538', mode: '2.0' },
+      { id: 's176', name: '增光路店', district: '海淀区', adminArea: '海淀区', bizArea: '经营八区', region: '经营八区', manager: '程娟', managerTitle: '门店第一负责人', employeeId: '7990', mode: '2.0' },
+      { id: 's177', name: '健德门店', district: '朝阳区', adminArea: '朝阳区', bizArea: '经营八区', region: '经营八区', manager: '陈晓霞', managerTitle: '门店第一负责人', employeeId: '2091', mode: '2.0' },
+      { id: 's178', name: '陶然亭店', district: '西城区', adminArea: '西城区', bizArea: '经营八区', region: '经营八区', manager: '蔡俊超', managerTitle: '门店第一负责人', employeeId: '14134', mode: '2.0' },
+      { id: 's179', name: '新华大街店', district: '通州区', adminArea: '通州区', bizArea: '经营八区', region: '经营八区', manager: '苏嘉宁', managerTitle: '门店第一负责人', employeeId: '10607', mode: '2.0' },
+      { id: 's180', name: '梨园店', district: '通州区', adminArea: '通州区', bizArea: '经营八区', region: '经营八区', manager: '王淑敏', managerTitle: '门店第一负责人', employeeId: '14778', mode: '2.0' },
+      { id: 's181', name: '五棵松店', district: '海淀区', adminArea: '海淀区', bizArea: '经营九区', region: '经营九区', manager: '李英诚', managerTitle: '门店第一负责人', employeeId: '9955', mode: '2.5' },
+      { id: 's182', name: '广安门店', district: '西城区', adminArea: '西城区', bizArea: '经营九区', region: '经营九区', manager: '陈晶', managerTitle: '门店第一负责人', employeeId: '8065', mode: '2.5' },
+      { id: 's183', name: '五路居店', district: '朝阳区', adminArea: '朝阳区', bizArea: '经营九区', region: '经营九区', manager: '张国才', managerTitle: '门店第一负责人', employeeId: '11896', mode: '2.5' },
+      { id: 's184', name: '三元桥店', district: '朝阳区', adminArea: '朝阳区', bizArea: '经营九区', region: '经营九区', manager: '孔令军', managerTitle: '门店第一负责人', employeeId: '5715', mode: '2.5' },
+      { id: 's185', name: '南小街店', district: '大兴区', adminArea: '大兴区', bizArea: '经营九区', region: '经营九区', manager: '黄军恒', managerTitle: '门店第一负责人', employeeId: '11755', mode: '2.5' },
+      { id: 's186', name: '黄寺店', district: '西城区', adminArea: '西城区', bizArea: '经营九区', region: '经营九区', manager: '王亚奇', managerTitle: '门店第一负责人', employeeId: '7019', mode: '2.0' },
+      { id: 's187', name: '中关村店', district: '海淀区', adminArea: '海淀区', bizArea: '经营九区', region: '经营九区', manager: '钟伟栋', managerTitle: '门店第一负责人', employeeId: '7920', mode: '2.0' },
+      { id: 's188', name: '望京店', district: '朝阳区', adminArea: '朝阳区', bizArea: '经营九区', region: '经营九区', manager: '吴章梅', managerTitle: '门店第一负责人', employeeId: '17218', mode: '2.0' },
+      { id: 's189', name: '迪阳大厦店', district: '朝阳区', adminArea: '朝阳区', bizArea: '经营九区', region: '经营九区', manager: '李明光', managerTitle: '门店第一负责人', employeeId: '1421', mode: '2.0' },
+      { id: 's190', name: '太阳宫店', district: '朝阳区', adminArea: '朝阳区', bizArea: '经营九区', region: '经营九区', manager: '王雪丽', managerTitle: '门店第一负责人', employeeId: '5237', mode: '2.0' },
+      { id: 's191', name: '常营陆港城店', district: '朝阳区', adminArea: '朝阳区', bizArea: '经营九区', region: '经营九区', manager: '胡方辉', managerTitle: '门店第一负责人', employeeId: '15503', mode: '2.0' },
+      { id: 's192', name: '昌发展万科店', district: '昌平区', adminArea: '昌平区', bizArea: '经营九区', region: '经营九区', manager: '段彦鹤', managerTitle: '门店第一负责人', employeeId: '10775', mode: '2.0' },
+      { id: 's193', name: '北京北站店', district: '西城区', adminArea: '西城区', bizArea: '经营九区', region: '经营九区', manager: '王磊', managerTitle: '门店第一负责人', employeeId: '12824', mode: '2.0' },
+      { id: 's194', name: '人民大学二店', district: '海淀区', adminArea: '海淀区', bizArea: '经营九区', region: '经营九区', manager: '赵少帅', managerTitle: '门店第一负责人', employeeId: '15863', mode: '2.0' },
+      { id: 's195', name: '东中街店', district: '东城区', adminArea: '东城区', bizArea: '经营十区', region: '经营十区', manager: '周峰', managerTitle: '门店第一负责人', employeeId: '274', mode: '3.0' },
+      { id: 's196', name: '郁花园店', district: '大兴区', adminArea: '大兴区', bizArea: '经营十区', region: '经营十区', manager: '李承兵', managerTitle: '门店第一负责人', employeeId: '2280', mode: '3.0' },
+      { id: 's197', name: '十里堡店', district: '朝阳区', adminArea: '朝阳区', bizArea: '经营十区', region: '经营十区', manager: '董莹莹', managerTitle: '门店第一负责人', employeeId: '18797', mode: '3.0' },
+      { id: 's198', name: '定福庄店', district: '朝阳区', adminArea: '朝阳区', bizArea: '经营十区', region: '经营十区', manager: '郭丰瑜', managerTitle: '门店第一负责人', employeeId: '12636', mode: '3.0' }
     ],
     users: [
       { id: 'u001', name: '管理员', role: '总部', area: '', storeId: '', store: '', phone: '13800000001' },
@@ -129,17 +319,17 @@ const App = {
     }
 
     try {
-      var { count } = await this.supabase.from('stores').select('*', { count: 'exact', head: true });
-      if (count === 0) {
-        for (var t = 0; t < this.tables.length; t++) {
-          var table = this.tables[t];
-          if (this.seedData[table] && this.seedData[table].length > 0) {
+      for (var t = 0; t < this.tables.length; t++) {
+        var table = this.tables[t];
+        if (this.seedData[table] && this.seedData[table].length > 0) {
+          var { count } = await this.supabase.from(table).select('*', { count: 'exact', head: true });
+          if (count === 0) {
             // 写入 Supabase 时转 snake_case
             await this.supabase.from(table).insert(this._snakeList(this.seedData[table]));
           }
         }
-        console.log('[Supabase] 种子数据初始化完成');
       }
+      console.log('[Supabase] 种子数据初始化完成');
       await this.loadAll();
       this.dataReady = true;
     } catch (e) {
@@ -196,6 +386,13 @@ const App = {
       from += limit;
     }
     this.dataCache[table] = allRows;
+    // Supabase 返回空时用 localStorage 兜底
+    if (allRows.length === 0) {
+      var localData = localStorage.getItem('nanchengxiang_' + table);
+      if (localData) {
+        try { this.dataCache[table] = JSON.parse(localData); } catch (e) {}
+      }
+    }
   },
 
   /* 页面切换时刷新缓存（获取最新数据） */
@@ -262,8 +459,12 @@ const App = {
     this.dataCache.users = data;
     localStorage.setItem('nanchengxiang_users', JSON.stringify(data));
     if (this.supabase) {
-      await this.supabase.from('users').delete().neq('id', '__none__');
-      if (data.length > 0) await this.supabase.from('users').insert(this._snakeList(data));
+      try {
+        await this.supabase.from('users').delete().neq('id', '__none__');
+        if (data.length > 0) await this.supabase.from('users').insert(this._snakeList(data));
+      } catch (e) {
+        console.warn('[Supabase] saveUsers 失败，保留 localStorage 数据:', e.message);
+      }
     }
   },
 
@@ -542,8 +743,162 @@ const App = {
     a.download = type + '_' + now.getFullYear() + ('0'+(now.getMonth()+1)).slice(-2) + ('0'+now.getDate()).slice(-2) + '.xls';
     a.click();
     this.toast('导出成功');
+  },
+
+  /* ==================== 可搜索门店选择器 ==================== */
+
+  // 渲染可搜索选择器HTML
+  renderStoreSelect(id, stores, selectedValue, placeholder) {
+    placeholder = placeholder || '输入门店名称搜索...';
+    selectedValue = selectedValue || '';
+    var sel = stores.find(function(s) { return s.id === selectedValue; });
+    var display = sel ? (sel.id + '  ' + sel.name) : '';
+    var h = '<div class="search-select" id="' + id + '">';
+    h += '<input type="text" class="search-select-input" value="' + this._esc(display) + '" placeholder="' + this._esc(placeholder) + '" autocomplete="off" data-selected="' + this._esc(selectedValue) + '">';
+    h += '<div class="search-select-dropdown" style="display:none"></div>';
+    h += '</div>';
+    return h;
+  },
+
+  // 初始化可搜索选择器（页面渲染后调用）
+  initStoreSelect(id, stores, onSelect) {
+    var self = this;
+    var container = document.getElementById(id);
+    if (!container) return;
+    var input = container.querySelector('.search-select-input');
+    var dropdown = container.querySelector('.search-select-dropdown');
+    if (!input || !dropdown) return;
+
+    var filterTimer;
+    function filter(keyword) {
+      var kw = (keyword || '').toLowerCase().trim();
+      if (!kw) {
+        // 清空时展示全部（最多50条，提高性能）
+        kw = '';
+      }
+      var filtered = stores.filter(function(s) {
+        return s.name.toLowerCase().indexOf(kw) >= 0 ||
+               s.id.toLowerCase().indexOf(kw) >= 0 ||
+               s.district.toLowerCase().indexOf(kw) >= 0 ||
+               s.region.toLowerCase().indexOf(kw) >= 0 ||
+               (s.manager && s.manager.toLowerCase().indexOf(kw) >= 0);
+      });
+      // 超过50条只显示前50
+      var total = filtered.length;
+      if (total > 50) filtered = filtered.slice(0, 50);
+      if (filtered.length === 0) {
+        dropdown.innerHTML = '<div class="search-select-empty">无匹配门店</div>';
+      } else {
+        var html = '';
+        if (total > 50) {
+          html += '<div class="search-select-hint">显示前50条，共' + total + '条，请继续输入缩小范围</div>';
+        }
+        filtered.forEach(function(s) {
+          html += '<div class="search-select-item" data-id="' + self._esc(s.id) + '" data-name="' + self._esc(s.name) + '">';
+          html += '<span class="ssi-id">' + self._esc(s.id) + '</span>';
+          html += '<span class="ssi-name">' + self._esc(s.name) + '</span>';
+          html += '<span class="ssi-meta">' + self._esc(s.district + ' · ' + s.region) + '</span>';
+          html += '</div>';
+        });
+        dropdown.innerHTML = html;
+
+        // 绑定点击
+        dropdown.querySelectorAll('.search-select-item').forEach(function(item) {
+          item.addEventListener('mousedown', function(e) {
+            e.preventDefault();
+            var sid = item.dataset.id;
+            var sname = item.dataset.name;
+            input.value = sid + '  ' + sname;
+            input.dataset.selected = sid;
+            dropdown.style.display = 'none';
+            self._markStoreSelectValid(container, true);
+            if (onSelect) onSelect(sid, sname);
+          });
+        });
+      }
+      dropdown.style.display = 'block';
+    }
+
+    input.addEventListener('focus', function() {
+      // 聚焦时如果已有选中值，清空输入框方便重新搜索
+      if (input.dataset.selected) {
+        input.value = '';
+      }
+      filter(input.value);
+    });
+
+    input.addEventListener('input', function() {
+      clearTimeout(filterTimer);
+      filterTimer = setTimeout(function() { filter(input.value); }, 150);
+    });
+
+    // 点击外部关闭
+    document.addEventListener('click', function(e) {
+      if (!container.contains(e.target)) {
+        dropdown.style.display = 'none';
+        // 如果未选中有效值，恢复之前选中的显示
+        if (!input.dataset.selected && stores.length > 0) {
+          var prev = stores.find(function(s) { return s.id === input.dataset.selected; });
+          if (!prev) {
+            input.value = '';
+            self._markStoreSelectValid(container, false);
+          }
+        } else if (input.dataset.selected) {
+          var sel = stores.find(function(s) { return s.id === input.dataset.selected; });
+          if (sel) {
+            input.value = sel.id + '  ' + sel.name;
+          }
+        }
+        // 如果input为空，标记无效
+        if (!input.dataset.selected || !input.value.trim()) {
+          self._markStoreSelectValid(container, false);
+        }
+      }
+    });
+
+    // 初始状态：如果有默认值，显示
+    if (selectedValue) {
+      container.classList.add('selected');
+    }
+  },
+
+  // 获取可搜索选择器的选中值
+  getStoreSelectValue(id) {
+    var input = document.querySelector('#' + id + ' .search-select-input');
+    return input ? input.dataset.selected || '' : '';
+  },
+
+  // 重置选择器
+  resetStoreSelect(id) {
+    var container = document.getElementById(id);
+    if (!container) return;
+    var input = container.querySelector('.search-select-input');
+    if (input) {
+      input.value = '';
+      input.dataset.selected = '';
+    }
+    container.classList.remove('selected');
+  },
+
+  // 标记选择器状态（有效/无效样式）
+  _markStoreSelectValid(container, valid) {
+    if (valid) {
+      container.classList.add('selected');
+      container.classList.remove('invalid');
+    } else {
+      container.classList.remove('selected');
+      if (!container.querySelector('.search-select-input').value.trim()) {
+        container.classList.remove('invalid');
+      }
+    }
+  },
+
+  // HTML转义
+  _esc(s) {
+    if (!s) return '';
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
 };
 
-/* 启动 */
+  /* 启动 */
 document.addEventListener('DOMContentLoaded', function() { App.init(); });
