@@ -232,7 +232,8 @@ const App = {
       { id: 'u011', name: '王五', role: '店长', area: '', storeId: 'SLH001', store: '十里河店', phone: '13800000011' },
       { id: 'u012', name: '赵六', role: '店长', area: '', storeId: 'SH001', store: '上海徐汇店', phone: '13800000012' },
       { id: 'u013', name: '孙七', role: '店长', area: '', storeId: 'HD001', store: '海淀黄庄店', phone: '13800000013' },
-      { id: 'u014', name: '周八', role: '店长', area: '', storeId: 'DC001', store: '东城王府井店', phone: '13800000014' }
+      { id: 'u014', name: '周八', role: '店长', area: '', storeId: 'DC001', store: '东城王府井店', phone: '13800000014' },
+      { id: 'u015', name: '侯兴宇', role: '总部', area: '', storeId: '', store: '', phone: '15081280260' }
     ],
     region_coaches: [
       { region: '经营一区', coach: '教练A', storeCount: 3 },
@@ -305,10 +306,28 @@ const App = {
       this.supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     }
 
-    await this.initData();
+    // 立即渲染页面，不等待网络数据
     this.bindHashChange();
     this.bindTabBar();
     this.checkLogin();
+
+    // 后台加载数据，完成后自动刷新当前页面
+    var self = this;
+    setTimeout(async function() {
+      try {
+        var dataPromise = self.initData();
+        var timeout = new Promise(function(_, reject) {
+          setTimeout(function() { reject(new Error('timeout')); }, 8000);
+        });
+        await Promise.race([dataPromise, timeout]);
+      } catch (e) {
+        console.warn('[App] 数据加载超时，使用本地缓存:', e.message);
+        if (!self.dataReady) self.initLocalFallback();
+      }
+      // 数据就绪后刷新当前页面
+      var hash = (location.hash || '#home').replace('#', '');
+      if (Pages && Pages[hash]) Pages[hash]();
+    }, 100);
   },
 
   /* 首次使用种子数据到 Supabase；已有数据则直接加载 */
