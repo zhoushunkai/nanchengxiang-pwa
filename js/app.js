@@ -589,6 +589,7 @@ const App = {
     var tabbar = document.getElementById('tabbar');
     tabbar.style.display = (hash === 'login' || hash === 'offline-inspect' || hash === 'admin') ? 'none' : 'flex';
 
+    // 按角色权限过滤底部Tab栏（2026-08-06部署修复）
     // 权限过滤 Tab 栏
     if (this.currentUser) {
       var role = this.currentUser.role;
