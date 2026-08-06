@@ -1,14 +1,14 @@
-const CACHE_NAME = 'nanchengxiang-pwa-v19';
+const CACHE_NAME = 'nanchengxiang-pwa-v20';
 const ASSETS = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-  '/apple-touch-icon.png',
-  '/icon-192.png',
-  '/icon-512.png',
-  '/css/app.css',
-  '/js/app.js',
-  '/js/pages.js'
+  './',
+  './index.html',
+  './manifest.json',
+  './apple-touch-icon.png',
+  './icon-192.png',
+  './icon-512.png',
+  './css/app.css',
+  './js/app.js',
+  './js/pages.js'
 ];
 
 self.addEventListener('install', e => {
