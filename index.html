@@ -10,7 +10,6 @@
   <link rel="manifest" href="manifest.json">
   <link rel="stylesheet" href="css/app.css">
   <title>南城香协作终端</title>
-  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 </head>
 <body>
 
@@ -104,6 +103,10 @@
   <script src="js/app.js"></script>
   <script src="js/pages.js"></script>
   <script src="vendor/tesseract.min.js"></script>
+
+  <!-- 异步加载 xlsx（不阻塞渲染） -->
+  <script async src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"
+          onerror="console.warn('xlsx CDN 加载失败，Excel 功能不可用')"></script>
 
   <!-- Service Worker -->
   <script>
