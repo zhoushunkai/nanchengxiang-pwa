@@ -92,8 +92,8 @@ Pages.home = function() {
   let html = '';
 
   /* 用户个人信息卡片 */
-  var roleNames = { '总部': '总部管理员', '线上稽核': '线上稽核员', '线下稽核': '线下稽核员', '区域教练': '区域教练', '店长': '店长', 'admin': '预览模式' };
-  var roleBadgeColors = { '总部': '#c41a1a', '线上稽核': '#2563eb', '线下稽核': '#7c3aed', '区域教练': '#d97706', '店长': '#059669', 'admin': '#6b7280' };
+  var roleNames = App.Permissions.roleNames;
+  var roleBadgeColors = App.Permissions.roleBadgeColors;
   html += '<div class="user-profile">';
   html += '<div class="user-avatar" style="background:' + (roleBadgeColors[user.role] || '#888') + '">' + (user.name || '?')[0] + '</div>';
   html += '<div class="user-info-text">';
@@ -175,7 +175,7 @@ Pages.home = function() {
     html += '<div class="quick-entry" onclick="location.hash=\'#dashboard\'"><span class="qe-icon">\u{1F4CA}</span>数据看板</div>';
     html += '</div>';
 
-  } else if (user.role === '总部' || user.role === '区域教练' || user.role === 'admin') {
+  } else if (user.role === '总部' || user.role === '区域教练' || user.role === 'admin' || user.role === '客服' || user.role === '营运') {
     const totalPenalties = penalties.length;
     const donePenalties = penalties.filter(p => p.status === '已闭环').length;
     const totalComplaints = complaints.length;
@@ -203,7 +203,9 @@ Pages.home = function() {
     html += '<div class="quick-entry" onclick="location.hash=\'#penalty\'"><span class="qe-icon">\u{26A0}</span>处罚管理</div>';
     html += '<div class="quick-entry" onclick="location.hash=\'#complaint\'"><span class="qe-icon">\u{1F4AC}</span>差评审核</div>';
     html += '<div class="quick-entry" onclick="location.hash=\'#inspection\'"><span class="qe-icon">\u{1F4CB}</span>检查记录</div>';
-    html += '<div class="quick-entry" onclick="location.hash=\'#admin\'"><span class="qe-icon">\u{2699}</span>数据管理</div>';
+    if (user.role === '总部' || user.role === 'admin' || user.role === '客服') {
+      html += '<div class="quick-entry" onclick="location.hash=\'#admin\'"><span class="qe-icon">\u{2699}</span>数据管理</div>';
+    }
     html += '</div>';
   }
 
@@ -213,7 +215,7 @@ Pages.home = function() {
 /* ---- 数据管理页（总部专享：人员管理 + 导入导出） ---- */
 Pages.admin = function() {
   var user = App.currentUser;
-  if (user.role !== '总部' && user.role !== 'admin') {
+  if (user.role !== '总部' && user.role !== 'admin' && user.role !== '客服') {
     var el = document.getElementById('page-admin');
     el.innerHTML = '<div class="empty-state"><div class="empty-icon">&#128683;</div><div>仅总部管理员可访问此页面</div></div>';
     return;
@@ -232,13 +234,13 @@ Pages.admin = function() {
     html += '<div class="empty-state">暂无人员数据</div>';
   } else {
     html += '<div class="user-list">';
-    var roleMap = { '总部': '#c41a1a', '线上稽核': '#2563eb', '线下稽核': '#7c3aed', '区域教练': '#d97706', '店长': '#059669' };
+    var roleMap = App.Permissions.roleBadgeColors;
     users.forEach(function(u) {
       html += '<div class="user-row">';
       html += '<div class="user-info">';
       html += '<div class="user-name">' + u.name + '</div>';
       html += '<div class="user-meta">';
-      html += '<span class="user-role-tag" style="background:' + (roleMap[u.role] || '#6b7280') + '">' + u.role + '</span>';
+      html += '<span class="user-role-tag" style="background:' + (roleMap[u.role] || '#6b7280') + '">' + (App.Permissions.roleNames[u.role] || u.role) + '</span>';
       if (u.store) html += '<span class="user-store">' + u.store + '</span>';
       if (u.area) html += '<span class="user-area">' + u.area + '</span>';
       html += '<span class="user-phone">' + (u.phone || '') + '</span>';
@@ -312,7 +314,7 @@ Pages._userForm = function(id) {
 
   html += '<div class="form-group"><label>角色</label>';
   html += '<select id="uf-role" class="form-input">';
-  ['总部', '线上稽核', '线下稽核', '区域教练', '店长'].forEach(function(r) {
+  ['总部', '线上稽核', '线下稽核', '区域教练', '店长', '客服', '营运'].forEach(function(r) {
     var sel = (u && u.role === r) ? ' selected' : '';
     html += '<option value="' + r + '"' + sel + '>' + r + '</option>';
   });
@@ -387,6 +389,12 @@ Pages.inspection = function() {
   const records = App.getOnlineRecords();
 
   let html = '';
+
+  if (!App.Permissions.canAccess(user.role, 'inspection')) {
+    html += '<div class="empty-state"><div class="empty-icon">&#128683;</div><div>当前角色无权限访问此页面</div></div>';
+    el.innerHTML = html;
+    return;
+  }
 
   // 表单
   html += '<div class="card"><div class="card-title">\u{1F4F7} 优化部稽核记录</div>';
@@ -598,7 +606,13 @@ Pages.penalty = function() {
 
   let html = '';
 
-  if (user.role === '总部' || user.role === '线上稽核' || user.role === '线下稽核' || user.role === '区域教练') {
+  if (!App.Permissions.canAccess(user.role, 'penalty')) {
+    html += '<div class="empty-state"><div class="empty-icon">&#128683;</div><div>当前角色无权限访问此页面</div></div>';
+    el.innerHTML = html;
+    return;
+  }
+
+  if (App.Permissions.canAccess(user.role, 'penalty') && user.role !== '店长') {
     // 完整表单 — 22个字段
     html += '<div class="card"><div class="card-title">\u{26A0} 处罚登记</div>';
 
@@ -799,6 +813,12 @@ Pages.complaint = function() {
 
   let html = '';
 
+  if (!App.Permissions.canAccess(user.role, 'complaint')) {
+    html += '<div class="empty-state"><div class="empty-icon">&#128683;</div><div>当前角色无权限访问此页面</div></div>';
+    el.innerHTML = html;
+    return;
+  }
+
   // 表单
   html += '<div class="card"><div class="card-title">\u{1F4AC} 差评录入</div>';
 
@@ -921,7 +941,7 @@ Pages.showComplaintDetail = function(id) {
   }
 
   /* 申诉流程 */
-  if (c.status === '待申诉' && (user.role === '店长' || user.role === '总部')) {
+  if (c.status === '待申诉' && (user.role === '店长' || user.role === '总部' || user.role === '客服' || user.role === '营运')) {
     html += '<hr style="margin:12px 0;border-color:var(--border)">';
     html += '<div class="form-group"><label class="form-label">申诉内容</label><textarea id="detail-appeal" class="form-textarea" placeholder="申诉理由和材料..."></textarea></div>';
     if (user.role === '店长') {
@@ -1031,6 +1051,13 @@ Pages.dashboardMode = Pages.dashboardMode || 'mtd';
 Pages.dashboard = function() {
   const el = document.getElementById('page-dashboard');
   if (!el) return;
+  const user = App.currentUser;
+
+  if (!App.Permissions.canAccess(user.role, 'dashboard')) {
+    el.innerHTML = '<div class="empty-state"><div class="empty-icon">&#128683;</div><div>当前角色无权限访问此页面</div></div>';
+    return;
+  }
+
   const today = '2026-08-01';
   const mode = Pages.dashboardMode;
   const isToday = mode === 'today';
@@ -1341,6 +1368,12 @@ Pages.daily = function() {
   var today = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0');
 
   var html = '';
+
+  if (!App.Permissions.canAccess(user.role, 'daily')) {
+    html += '<div class="empty-state"><div class="empty-icon">&#128683;</div><div>当前角色无权限访问此页面</div></div>';
+    el.innerHTML = html;
+    return;
+  }
 
   // 模式切换
   html += '<div class="daily-mode-bar">';
