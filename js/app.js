@@ -233,7 +233,9 @@ const App = {
       { id: 'u012', name: '赵六', role: '店长', area: '', storeId: 'SH001', store: '上海徐汇店', phone: '13800000012' },
       { id: 'u013', name: '孙七', role: '店长', area: '', storeId: 'HD001', store: '海淀黄庄店', phone: '13800000013' },
       { id: 'u014', name: '周八', role: '店长', area: '', storeId: 'DC001', store: '东城王府井店', phone: '13800000014' },
-      { id: 'u015', name: '侯兴宇', role: '总部', area: '', storeId: '', store: '', phone: '15081280260' }
+      { id: 'u015', name: '侯兴宇', role: '总部', area: '', storeId: '', store: '', phone: '15081280260' },
+      { id: 'u016', name: '客服小王', role: '客服', area: '', storeId: '', store: '', phone: '13800000016' },
+      { id: 'u017', name: '营运李总', role: '营运', area: '', storeId: '', store: '', phone: '13800000017' }
     ],
     region_coaches: [
       { region: '经营一区', coach: '教练A', storeCount: 3 },
@@ -298,6 +300,34 @@ const App = {
 
   /* ---- 表名映射 ---- */
   tables: ['stores', 'users', 'region_coaches', 'penalties', 'complaints', 'online_records', 'offline_records', 'daily_reports'],
+
+  /* ---- 权限矩阵 ---- */
+  Permissions: {
+    matrix: {
+      '总部':     { inspection: true, daily: true, penalty: true, complaint: true, notice: true, dashboard: true, task: true },
+      '线上稽核': { inspection: true, daily: true, penalty: false, complaint: false, notice: true, dashboard: true, task: true },
+      '线下稽核': { inspection: true, daily: true, penalty: false, complaint: false, notice: true, dashboard: true, task: true },
+      '稽核员':   { inspection: true, daily: true, penalty: false, complaint: false, notice: true, dashboard: true, task: true },
+      '客服':     { inspection: true, daily: true, penalty: true, complaint: true, notice: true, dashboard: true, task: true },
+      '营运':     { inspection: false, daily: false, penalty: true, complaint: true, notice: true, dashboard: true, task: true },
+      '店长':     { inspection: false, daily: false, penalty: true, complaint: true, notice: true, dashboard: false, task: true },
+      '区域教练': { inspection: true, daily: true, penalty: true, complaint: true, notice: true, dashboard: true, task: true },
+      'admin':   { inspection: true, daily: true, penalty: true, complaint: true, notice: true, dashboard: true, task: true }
+    },
+    canAccess: function(role, module) {
+      var perm = this.matrix[role];
+      if (!perm) return false;
+      return perm[module] === true;
+    },
+    roleNames: {
+      '总部': '总部管理员', '线上稽核': '线上稽核员', '线下稽核': '线下稽核员', '稽核员': '稽核员',
+      '客服': '客服', '营运': '营运', '区域教练': '区域教练', '店长': '店长', 'admin': '预览模式'
+    },
+    roleBadgeColors: {
+      '总部': '#c41a1a', '线上稽核': '#2563eb', '线下稽核': '#7c3aed', '稽核员': '#2563eb',
+      '客服': '#059669', '营运': '#d97706', '区域教练': '#d97706', '店长': '#059669', 'admin': '#6b7280'
+    }
+  },
 
   /* ==================== 初始化 ==================== */
   async init() {
@@ -558,6 +588,20 @@ const App = {
 
     var tabbar = document.getElementById('tabbar');
     tabbar.style.display = (hash === 'login' || hash === 'offline-inspect' || hash === 'admin') ? 'none' : 'flex';
+
+    // 权限过滤 Tab 栏
+    if (this.currentUser) {
+      var role = this.currentUser.role;
+      var self = this;
+      var pageToModule = { 'inspection': 'inspection', 'daily': 'daily', 'penalty': 'penalty',
+                           'complaint': 'complaint', 'template': 'notice', 'task': 'task', 'dashboard': 'dashboard' };
+      document.querySelectorAll('.tab-item').forEach(function(t) {
+        var page = t.dataset.page;
+        var module = pageToModule[page];
+        if (!module) return;
+        t.style.display = self.Permissions.canAccess(role, module) ? '' : 'none';
+      });
+    }
 
     var titleMap = {
       login: '南城香协作终端', home: '首页', inspection: '门店检查', 'offline-inspect': '线下门店检查',
