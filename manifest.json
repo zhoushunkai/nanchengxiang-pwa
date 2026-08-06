@@ -2,7 +2,7 @@
   "name": "南城香协作终端",
   "short_name": "南城香协作",
   "description": "南城香门店协作管理终端 - 检查/处罚/差评/看板",
-  "start_url": "/",
+  "start_url": "./",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#F5F5F5",
